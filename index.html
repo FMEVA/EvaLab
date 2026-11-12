@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<!-- saved from url=(0071)file:///Users/foxcore/EVA%20projet/site%20web/EVA%20LABORATOIRE%20.html -->
+<html lang="fr"><!--
+════════════════════════════════════════════════════════════════════════
+  EVA LABORATOIRE 
+════════════════════════════════════════════════════════════════════════
+
+════════════════════════════════════════════════════════════════════════
+--><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVA LABORATOIRE // GREYTOWN — Dossier confidentiel</title>
+<meta name="description" content="Eva Laboratoire — rap et musique électronique expérimentale. Limoges, Greytown. Ce véhicule ne prend pas de voyageur.">
+<meta name="theme-color" content="#080606">
+
+<style>
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ① VARIABLES — Palette « DDR-VERB » (d'après le plugin)          ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+:root{
+  /* --- Fonds --- */
+  --bg:           #080606;
+  --panel:        #140b0b;
+  --panel-inner:  #1c0f0f;
+  
+  /* --- Accents --- */
+  --red:          #e61c1c;
+  --red-dim:      #5c1414;
+  --red-glow:     rgba(230, 28, 28, 0.4);
+  --orange:       #ff9900;
+  --green:        #4ade80;
+  --green-glow:   rgba(74, 222, 128, 0.3);
+  
+  /* --- Textes --- */
+  --text-main:    #d1d1d1;
+  --text-dim:     #737373;
+  --titlebar-bg:  #d4cfc7;
+  --titlebar-tx:  #1a1a1a; 
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ② BASE & TEXTURES                                               ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+
+body{
+  margin:0;
+  padding:0;
+  font-family:"Courier New","Lucida Console",Courier,monospace;
+  font-size:14px;
+  line-height:1.6;
+  color:var(--text-main);
+  background-color:var(--bg);
+  background-image: 
+    linear-gradient(rgba(230, 28, 28, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230, 28, 28, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-attachment:fixed;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ③ AMBIANCE — Scanlines & Grain                                  ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.scanlines,
+.grain{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:100;
+}
+
+.scanlines{
+  background:repeating-linear-gradient(0deg,
+    rgba(0,0,0,.35) 0px, rgba(0,0,0,.35) 1px,
+    rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px);
+  opacity:.4;
+  animation:flicker 7s steps(12) infinite;
+}
+@keyframes flicker{
+  0%,100%{opacity:.4}
+  47%{opacity:.35}
+  48%{opacity:.5}
+  49%{opacity:.45}
+}
+
+.grain{
+  opacity:.08;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  animation:grainmove .55s steps(3) infinite;
+}
+@keyframes grainmove{
+  0%{background-position:0 0}
+  33%{background-position:-32px 18px}
+  66%{background-position:22px -26px}
+  100%{background-position:-14px -8px}
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ④ BANDEAUX DE CLASSIFICATION                                    ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.classif-top,
+.classif-bottom{
+  background:var(--red-dim);
+  color:var(--red);
+  text-align:center;
+  padding:6px 10px;
+  font-size:10px;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  font-weight:bold;
+  text-shadow:0 0 5px var(--red-glow);
+  border-bottom:1px solid var(--red);
+  position:relative;
+  z-index:5;
+}
+.classif-top{ position:sticky; top:0; }
+.classif-bottom{
+  border-bottom:none;
+  border-top:1px solid var(--red);
+  margin-top:20px;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑤ CONTENEUR & PANNEAUX                                          ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.wrap{
+  max-width:980px;
+  margin:0 auto;
+  padding:20px 14px 40px;
+  position:relative;
+  z-index:2;
+}
+
+.panel{
+  background:var(--panel);
+  border:1px solid var(--red-dim);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  margin-bottom:20px;
+  position:relative;
+  overflow:hidden;
+}
+
+.panel[data-watermark]::after{
+  content:attr(data-watermark);
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) rotate(-22deg);
+  font-family:"Courier New",monospace;
+  font-size:clamp(50px, 9vw, 90px);
+  font-weight:bold;
+  letter-spacing:.28em;
+  color:rgba(230, 28, 28, 0.04);
+  pointer-events:none;
+  user-select:none;
+  white-space:nowrap;
+  z-index:0;
+  text-transform:uppercase;
+}
+
+.titlebar{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:4px 10px;
+  padding:5px 10px;
+  background:var(--titlebar-bg);
+  color:var(--titlebar-tx);
+  border-bottom:2px solid #000;
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  font-weight:bold;
+  position:relative;
+  z-index:1;
+}
+.titlebar .r{color:#555; font-size:9.5px}
+
+.panel-body{
+  padding:16px;
+  position:relative;
+  z-index:1;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑥ TAMPONS                                                       ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.stamp{
+  position:absolute;
+  top:40px;
+  right:18px;
+  padding:4px 12px;
+  font-family:"Courier New",monospace;
+  font-size:13px;
+  font-weight:bold;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--red);
+  border:2px solid var(--red);
+  transform:rotate(-11deg);
+  opacity:.8;
+  pointer-events:none;
+  user-select:none;
+  z-index:3;
+  text-shadow:0 0 5px var(--red-glow);
+  box-shadow: 0 0 10px var(--red-glow), inset 0 0 10px var(--red-glow);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑦ CAVIARDÉ                                                      ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.redacted{
+  background:#000;
+  color:#000;
+  padding:0 4px;
+  border:1px solid var(--red-dim);
+  border-radius:1px;
+  cursor:help;
+  user-select:none;
+  transition:all .15s linear;
+}
+.redacted:hover{ 
+  color:var(--red); 
+  background:#1a0505;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑧ TYPOGRAPHIE & HEADER                                         ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.doc-classif{
+  margin:0 0 14px;
+  padding:5px 9px;
+  background:rgba(230, 28, 28, 0.1);
+  border-left:2px solid var(--red);
+  font-size:10.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--red);
+  font-weight:bold;
+}
+
+.blink{
+  display:inline-block;
+  color:var(--red);
+  animation:blink 1.2s steps(2) infinite;
+  font-size:11px;
+  vertical-align:middle;
+  text-shadow:0 0 8px var(--red);
+}
+@keyframes blink{ 50%{opacity:.1} }
+
+h1{
+  margin:0 0 10px;
+  font-size:clamp(19px,4.6vw,33px);
+  line-height:1.2;
+  letter-spacing:.05em;
+  color:var(--red);
+  text-shadow:0 0 8px var(--red-glow), 0 0 2px var(--red);
+  word-break:break-word;
+  font-weight:bold;
+  text-transform:uppercase;
+}
+h1 .slash{color:var(--text-dim); font-weight:normal; text-shadow:none}
+h1 .accent{color:var(--text-main); text-shadow:0 0 5px rgba(255,255,255,0.2)}
+
+.devise{
+  margin:0 0 8px;
+  font-size:clamp(12px,2.7vw,15px);
+  color:var(--orange);
+  letter-spacing:.04em;
+  font-style:italic;
+  text-shadow:0 0 5px rgba(255, 153, 0, 0.3);
+}
+
+.genre{
+  margin:0;
+  font-size:10px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑨ NAVIGATION                                                    ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.tabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px dashed var(--red-dim);
+}
+.tabs a{
+  display:block;
+  padding:7px 13px;
+  font-family:inherit;
+  font-size:10.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:var(--text-main);
+  background:#1a0d0d;
+  border:1px solid var(--red-dim);
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+  transition:all .1s linear;
+}
+.tabs a:hover,
+.tabs a:focus{
+  background:var(--red);
+  color:#000;
+  border-color:var(--red);
+  box-shadow:0 0 10px var(--red-glow);
+  outline:none;
+}
+.tabs a:active{transform:translate(1px,1px)}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑩ TICKER                                                        ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.ticker{
+  overflow:hidden;
+  background:#0a0505;
+  border:1px solid var(--red-dim);
+  color:var(--red);
+  margin-bottom:20px;
+  padding:4px 0;
+}
+.ticker span{
+  display:inline-block;
+  white-space:nowrap;
+  padding-left:100%;
+  font-size:10px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  text-shadow:0 0 5px var(--red-glow);
+  animation:scroll 38s linear infinite;
+}
+@keyframes scroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-100%)}
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑪ LEAD & FICHES MEMBRES                                         ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.lead{
+  margin:0 0 16px;
+  padding:8px 0 8px 11px;
+  border-left:2px solid var(--orange);
+  font-size:12px;
+  color:var(--text-dim);
+  font-style:italic;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(255px,1fr));
+  gap:14px;
+}
+
+.fiche{
+  background:var(--panel-inner);
+  border:1px solid var(--red-dim);
+  border-top:2px solid var(--red);
+  padding:11px 12px 13px;
+  position:relative;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
+}
+
+.fiche-head{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:4px 8px;
+  margin-bottom:9px;
+  padding-bottom:7px;
+  border-bottom:1px dashed var(--red-dim);
+}
+.idx{
+  font-size:9px;
+  letter-spacing:.16em;
+  color:var(--red);
+  text-transform:uppercase;
+}
+.fiche h3{
+  margin:0;
+  font-size:13.5px;
+  letter-spacing:.08em;
+  color:var(--text-main);
+  text-transform:uppercase;
+  font-weight:bold;
+}
+.fiche h3 .alias{color:var(--red);font-size:11px;font-weight:normal}
+
+table.spec{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+}
+table.spec th{
+  width:38%;
+  padding:4px 8px 4px 0;
+  text-align:left;
+  vertical-align:top;
+  font-weight:normal;
+  font-size:9px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+}
+table.spec td{
+  padding:4px 0;
+  color:var(--text-main);
+  vertical-align:top;
+}
+table.spec tr + tr th,
+table.spec tr + tr td{border-top:1px dotted #2a1515}
+
+.badge{
+  display:inline-block;
+  padding:1px 6px;
+  font-size:9px;
+  letter-spacing:.12em;
+  border:1px solid;
+  margin-right:4px;
+  text-transform:uppercase;
+  font-weight:bold;
+}
+.badge.on{      
+  background:rgba(74, 222, 128, 0.1); 
+  color:var(--green); 
+  border-color:var(--green);
+  text-shadow:0 0 5px var(--green-glow);
+}
+.badge.ext{     
+  background:rgba(255, 153, 0, 0.1); 
+  color:var(--orange); 
+  border-color:var(--orange);
+}
+.badge.offline{ 
+  background:rgba(230, 28, 28, 0.1); 
+  color:var(--red); 
+  border-color:var(--red);
+}
+
+.badge.bug-flash{
+  animation: bug-status .7s steps(3) 1;
+}
+@keyframes bug-status{
+  0%   { transform: translate(0, 0);     filter: none; }
+  15%  { transform: translate(-2px, 1px); filter: hue-rotate(60deg) brightness(1.4); }
+  30%  { transform: translate(2px, -1px); filter: none; }
+  45%  { transform: translate(-1px, 1px); filter: hue-rotate(-60deg) brightness(1.3); }
+  60%  { transform: translate(1px, -1px); filter: none; }
+  75%  { transform: translate(-1px, 0);  filter: hue-rotate(45deg) brightness(1.25); }
+  100% { transform: translate(0, 0);     filter: none; }
+}
+
+.note{
+  margin:10px 0 0;
+  padding-top:8px;
+  border-top:1px dashed var(--red-dim);
+  font-size:10.5px;
+  font-style:italic;
+  color:var(--text-dim);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑫ BOUTONS                                                       ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.btn{
+  display:inline-block;
+  margin-top:11px;
+  padding:6px 12px;
+  font-family:inherit;
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  text-decoration:none;
+  color:#000;
+  background:var(--orange);
+  border:1px solid #000;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 0 rgba(0,0,0,0.5);
+  cursor:pointer;
+  transition:all .08s linear;
+  font-weight:bold;
+}
+.btn:hover,.btn:focus{
+  filter:brightness(1.2);
+  outline:none;
+}
+.btn:active{
+  transform:translateY(2px);
+  box-shadow: none;
+}
+
+.btn-yt{
+  background:var(--red);
+  color:#fff;
+}
+.btn-sp{
+  background:var(--green);
+  color:#000;
+}
+.btn-am{
+  background:#d98d95;
+  color:#000;
+}
+.btn.small{padding:4px 10px;font-size:9px;margin-top:0}
+
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑬ SORTIES / DISCOGRAPHIE                                        ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.release{
+  background:var(--panel-inner);
+  border:1px solid var(--red-dim);
+  margin-bottom:16px;
+  position:relative;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
+}
+.release:last-child{margin-bottom:0}
+
+.release-head{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:5px 12px;
+  padding:8px 12px;
+  background:#1a0d0d;
+  border-bottom:1px solid var(--red-dim);
+}
+.rel-code{
+  font-size:9px;
+  letter-spacing:.1em;
+  color:var(--red);
+}
+.release-head h3{
+  margin:0;
+  font-size:13px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  color:var(--text-main);
+  font-weight:bold;
+}
+.rel-meta{
+  margin-left:auto;
+  font-size:9px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+}
+
+.release-body{padding:11px 12px 14px}
+
+table.tracks{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11.5px;
+}
+table.tracks td{
+  padding:5px 6px;
+  border-bottom:1px dotted #2a1515;
+  color:var(--text-main);
+}
+table.tracks tr:last-child td{border-bottom:0}
+table.tracks td.n{
+  width:36px;
+  color:var(--red);
+  font-size:10px;
+  letter-spacing:.1em;
+  font-weight:bold;
+}
+table.tracks td.d{
+  text-align:right;
+  width:70px;
+  color:var(--text-dim);
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑭ FOOTER & STATUTS                                              ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.made{
+  margin:0 0 14px;
+  font-size:clamp(11px,2.6vw,13px);
+  letter-spacing:.06em;
+  color:var(--text-main);
+  text-align:center;
+  font-weight:bold;
+}
+.made .r{color:var(--red)}
+
+.footer-rain{
+  height:24px;
+  border-top:1px solid var(--red-dim);
+  border-bottom:1px solid var(--red-dim);
+  background-image:repeating-linear-gradient(90deg,
+    transparent 0px, transparent 11px,
+    rgba(230, 28, 28, .3) 11px, rgba(230, 28, 28, .3) 12px);
+  opacity:.5;
+  animation:rainfall .7s linear infinite;
+  margin:0 0 14px;
+}
+@keyframes rainfall{
+  from{background-position:0 0}
+  to{background-position:0 500px}
+}
+
+.statusbar{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px 18px;
+  padding:8px 10px;
+  background:#050202;
+  border:1px solid var(--red-dim);
+  font-size:10px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+}
+.counter{
+  display:inline-block;
+  margin-left:6px;
+  padding:2px 9px;
+  background:#000;
+  border:1px solid var(--green);
+  color:var(--green);
+  letter-spacing:.3em;
+  font-variant-numeric:tabular-nums;
+  text-shadow:0 0 8px var(--green-glow);
+}
+#clock{color:var(--text-dim)}
+
+.hint{
+  margin:12px 0 0;
+  padding:6px 9px;
+  background:rgba(230, 28, 28, 0.05);
+  border:1px dashed var(--red-dim);
+  text-align:center;
+  font-size:9.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--red);
+}
+
+.legal{
+  margin:12px 0 0;
+  font-size:9.5px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text-dim);
+  text-align:center;
+  line-height:1.8;
+}
+
+a{color:var(--text-main)}
+a:hover{color:var(--red)}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑮ CLICK-SAT (Saturation au clic)                                ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.click-sat{
+  animation: click-sat .35s ease-out 1;
+}
+@keyframes click-sat{
+  0%   { filter: saturate(1)    contrast(1);    }
+  25%  { filter: saturate(1.9)  contrast(1.2); }
+  60%  { filter: saturate(1.3)  contrast(1.05); }
+  100% { filter: saturate(1)    contrast(1);    }
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑯ RESPONSIVE & MOUVEMENT RÉDUIT                                 ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+@media (max-width:620px){
+  body{font-size:13px}
+  .wrap{padding:14px 9px 30px}
+  .panel-body{padding:12px}
+  .titlebar{font-size:9px;letter-spacing:.05em}
+  .tabs a{flex:1 1 auto;text-align:center;padding:9px 8px;font-size:9.5px}
+  .rel-meta{margin-left:0;width:100%}
+  .statusbar{justify-content:flex-start}
+  table.spec{font-size:10.5px}
+  .stamp{font-size:10px;padding:3px 8px;top:14px;right:12px;letter-spacing:.16em}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none !important;
+    transition:none !important;
+  }
+  .scanlines,.grain,.footer-rain,.ticker span,.blink,
+  .click-sat,.badge.bug-flash{animation:none !important}
+}
+</style>
+</head>
+
+<body>
+
+<!-- Calques d'ambiance -->
+<div class="scanlines" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ① BANDEAU HAUT -->
+<div class="classif-top" role="note">
+  ■ DIFFUSION RESTREINTE — NE PAS DIVULGUER ■
+</div>
+
+<div class="wrap">
+
+  <!-- ② HEADER -->
+  <header class="panel" data-watermark="CONFIDENTIEL">
+
+    <span class="stamp" aria-hidden="true">SECRET DÉFENSE</span>
+
+    <div class="titlebar">
+      <span>ARCHIVES DOSSIER GREYTOWN</span>
+      <span class="r">RÉF. CONF/GT/A/00 &nbsp;·&nbsp; <span class="blink">●</span> ACTIF</span>
+    </div>
+
+    <div class="panel-body">
+
+      <p class="doc-classif">
+        <span class="blink">●</span>
+        CLASSIFICATION : CONFIDENTIEL / DIFFUSION RESTREINTE
+      </p>
+
+      <h1 class="">
+        EVA LABORATOIRE <span class="slash">//</span>
+        <span class="accent">GREYTOWN</span>
+      </h1>
+
+      <p class="devise">« Ce véhicule ne prend pas de voyageur »</p>
+
+      <p class="genre">
+        Rap &amp; musique expérimentale — Greytown, France
+      </p>
+
+      <nav class="tabs" aria-label="Navigation principale">
+        <a href="https://instagram.com/eva.laboratoire" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <!-- Lien YouTube corrigé ici -->
+        <a href="https://www.youtube.com/@EVAlab87" target="_blank" rel="noopener noreferrer" class="">YouTube</a>
+        <a href="https://open.spotify.com/artist/2fHfn9GHrnoTUINvqWvrSN?si=NVCnITWvStmDAP2S77kmoQ&amp;utm_source=copy-link" target="_blank" rel="noopener noreferrer">Spotify</a>
+        <a href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">Apple Music</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ③ TICKER -->
+  <div class="ticker" aria-hidden="true">
+    <span>/// MORPHEME 2 IS A LIE /// JLM 2027 /// DIFFUSION RESTREINTE /// NE PAS DIVULGUER /// ARCHIVES SONORES /// I AM IN HELL HELP ME — EP DISPONIBLE /// EVA.FM — DISPONIBLE /// FABRIQUÉ DURANT LA RÉVOLUTION /// CE VÉHICULE NE PREND PAS DE VOYAGEUR /// A VÉCU LE 25 VENDÉMIAIRE AN 235 /// </span>
+  </div>
+
+  <main>
+
+    <!-- ④ SECTION MEMBRES -->
+    <section class="panel" id="laboratoire" data-watermark="AGENTS">
+
+      <div class="titlebar">
+        <span>01 // Laboratoire — Dossiers membres</span>
+        <span class="r">RÉF. CONF/GT/A/01 &nbsp;·&nbsp; [3 FICHES]</span>
+      </div>
+
+      <div class="panel-body">
+        <p class="lead">
+          Fiches techniques de la cellule Eva.
+        </p>
+
+        <div class="grid">
+          <!-- FICHE 01 : FM -->
+          <article class="fiche">
+            <div class="fiche-head">
+              <span class="idx">Fiche 01</span>
+              <h3>FM <span class="alias">/ <span class="redacted" title="Alias non divulgué">██████████</span></span></h3>
+            </div>
+            <table class="spec">
+              <tbody><tr><th>Fonction</th><td>Productrice · Ingénieure du son</td></tr>
+              <tr><th>Nom de naissance</th><td><span class="redacted" title="Caviardé — accès restreint">████████████</span></td></tr>
+              <tr><th>Équipement</th><td>MANIFESTE, synthétiseur modulaire, console analogique</td></tr>
+              <tr><th>Spécialité</th><td>EXPÉRIMENTALE, INGÉNIERIE</td></tr>
+              <tr><th>Matricule</th><td>FM-<span class="redacted" title="Caviardé — accès restreint">██-███</span></td></tr>
+              <tr><th>Statut</th><td><span class="badge on">ACTIF</span></td></tr>
+            </tbody></table>
+            <p class="note">
+              Travaille uniquement sur REAPER. Ancienne membre de la cellule « onion »,
+              sujette PTSD.
+            </p>
+          </article>
+
+          <!-- FICHE 02 : SETHAM -->
+          <article class="fiche">
+            <div class="fiche-head">
+              <span class="idx">Fiche 02</span>
+              <h3>SETHAM</h3>
+            </div>
+            <table class="spec">
+              <tbody><tr><th>Fonction</th><td>Rappeur · Voix · Écriture</td></tr>
+              <tr><th>Identité civile</th><td><span class="redacted" title="Caviardé — accès restreint">████████</span></td></tr>
+              <tr><th>Équipement</th><td>Micro, magnétophone portable, carnet, drapeau</td></tr>
+              <tr><th>Spécialité</th><td>Flow de contrebande, chant révolutionnaire</td></tr>
+              <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">███████████████</span></td></tr>
+              <tr><th>Statut</th><td><span class="badge on">ACTIF</span></td></tr>
+            </tbody></table>
+            <p class="note">
+              Voix et plume du laboratoire. Trotskiste notoire.
+            </p>
+          </article>
+
+          <!-- FICHE 03 : FAUNEFOSSE -->
+          <article class="fiche">
+            <div class="fiche-head">
+              <span class="idx">Fiche 03</span>
+              <h3 class="">FAUNEFOSSE <span class="alias">/ Archiviste</span></h3>
+            </div>
+            <table class="spec">
+              <tbody><tr><th class="">Fonction</th><td>Collaborateur externe · Archiviste</td></tr>
+              <tr><th class="">Formation</th><td>Masterant en histoire antique</td></tr>
+              <tr><th>Spécialité</th><td>Savoirs anciens et oubliés, exhumés puis remis en circulation</td></tr>
+              <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">███████████████</span></td></tr>
+              <tr><th>Statut</th><td>
+                <span class="badge offline" id="faunefosse-status">HORS LIGNE</span>
+              </td></tr>
+            </tbody></table>
+            <p class="note">
+              Savant fou détenteur de savoirs perdus et oubliés qu'il met au
+              profit des expériences du laboratoire.
+            </p>
+            <a class="btn btn-yt" href="https://www.youtube.com/@faunefosse6417" target="_blank" rel="noopener noreferrer">
+              ► Archives — @faunefosse6417
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⑤ SECTION DISCOGRAPHIE -->
+    <section class="panel" id="archives" data-watermark="RÉSERVÉ">
+
+      <div class="titlebar">
+        <span>02 // Discographie — Archives sonores 2026</span>
+        <span class="r">RÉF. CONF/GT/A/02 &nbsp;·&nbsp; [2 RÉF.]</span>
+      </div>
+
+      <div class="panel-body">
+        <p class="lead">
+          Sorties 2026. Fiches de téléchargement conservées telles quelles
+          depuis le serveur d'origine.
+        </p>
+
+        <!-- RELEASE 01 -->
+        <article class="release">
+          <div class="release-head">
+            <span class="rel-code">[EVLAB-001]</span>
+            <h3>I AM IN HELL HELP ME</h3>
+            <span class="rel-meta">EP · 2026 · 3 TITRES</span>
+          </div>
+          <div class="release-body">
+            <table class="tracks">
+              <tbody><tr><td class="n">01</td><td>I AM IN HELL HELP ME</td><td class="d">piste</td></tr>
+              <tr><td class="n">02</td><td>Nomade</td>             <td class="d">piste</td></tr>
+              <tr><td class="n">03</td><td>Léviathan</td>          <td class="d">piste</td></tr>
+            </tbody></table>
+            <div class="row">
+              <a class="btn btn-sp small" href="https://open.spotify.com/artist/2fHfn9GHrnoTUINvqWvrSN?si=NVCnITWvStmDAP2S77kmoQ&amp;utm_source=copy-link" target="_blank" rel="noopener noreferrer">► Écouter sur Spotify</a>
+              <a class="btn btn-am small" href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">► Écouter sur Apple Music</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- RELEASE 02 -->
+        <article class="release">
+          <div class="release-head">
+            <span class="rel-code">[EVLAB-002]</span>
+            <h3>EVA.FM</h3>
+            <span class="rel-meta">SINGLE / EP · 2026 · 3 TITRES</span>
+          </div>
+          <div class="release-body">
+            <table class="tracks">
+              <tbody><tr><td class="n">01</td><td>Métal Hurlant</td>       <td class="d">piste</td></tr>
+              <tr><td class="n">02</td><td>SURCHAUFFE</td>          <td class="d">piste</td></tr>
+              <tr><td class="n">03</td><td>Démarrage machine</td>   <td class="d">piste</td></tr>
+            </tbody></table>
+            <div class="row">
+              <a class="btn btn-sp small" href="https://open.spotify.com/artist/2fHfn9GHrnoTUINvqWvrSN?si=NVCnITWvStmDAP2S77kmoQ&amp;utm_source=copy-link" target="_blank" rel="noopener noreferrer">► Écouter sur Spotify</a>
+              <a class="btn btn-am small" href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">► Écouter sur Apple Music</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ⑥ FOOTER -->
+  <footer class="panel">
+
+    <div class="titlebar">
+      <span>Statut système</span>
+      <span class="r">GREYTOWN &nbsp;·&nbsp; CONF/GT/A/99</span>
+    </div>
+
+    <div class="panel-body">
+
+      <div class="footer-rain" aria-hidden="true"></div>
+
+      <p class="made">
+        Made in Greytown <span class="r">—</span>
+        Sous la pluie et la révolution
+      </p>
+
+      <div class="statusbar">
+        <span>
+          Compteur de visites :
+          <span class="counter" id="counter" aria-label="Compteur de visites">000008</span>
+        </span>
+        <span id="clock">SYS 21:21:17</span>
+      </div>
+
+      <p class="hint">
+        ▸ Cliquez pour saturer la zone ▸
+      </p>
+
+      <p class="legal">
+        © 2026 EVA LABORATOIRE — Tous droits réservés, Limoges.<br>
+        Site optimisé pour 800×600 · Aucun cookie · Aucun voyageur à bord.<br>
+        <span class="redacted" title="Caviardé">RÉFÉRENCE INTERNE DU DOSSIER</span>
+      </p>
+
+    </div>
+  </footer>
+
+</div>
+
+<!-- ⑦ BANDEAU BAS -->
+<div class="classif-bottom" role="note">
+  ■ NE PAS CONSERVER ■
+</div>
+
+<script>
+/* ⑧ JAVASCRIPT MINIMAL */
+(function () {
+  'use strict';
+
+  // Compteur de visites
+  var KEY = 'eva_lab_visits';
+  var counterEl = document.getElementById('counter');
+  var n = 0;
+  try {
+    n = parseInt(window.localStorage.getItem(KEY) || '0', 10);
+    if (!isFinite(n) || n < 0) { n = 0; }
+  } catch (e) { n = 0; }
+  n = n + 1;
+  try { window.localStorage.setItem(KEY, String(n)); } catch (e) {}
+  if (counterEl) {
+    var s = String(n);
+    while (s.length < 6) { s = '0' + s; }
+    counterEl.textContent = s;
+  }
+
+  // Horloge
+  var clockEl = document.getElementById('clock');
+  function pad(v) { return v < 10 ? '0' + v : String(v); }
+  function tick() {
+    if (!clockEl) { return; }
+    var d = new Date();
+    clockEl.textContent = 'SYS ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+  }
+  tick();
+  window.setInterval(tick, 1000);
+
+  // Saturation au clic
+  document.addEventListener('click', function (e) {
+    var target = e.target;
+    if (!target || target.nodeType !== 1) { return; }
+    if (target === document.body || target === document.documentElement) { return; }
+    target.classList.remove('click-sat');
+    void target.offsetHeight;
+    target.classList.add('click-sat');
+    window.setTimeout(function () { target.classList.remove('click-sat'); }, 400);
+  }, true);
+
+  // Bug Statut Faunefosse
+  var fs = document.getElementById('faunefosse-status');
+  if (fs) {
+    window.setInterval(function () {
+      fs.textContent = 'ACTIF';
+      fs.classList.remove('offline');
+      fs.classList.add('on', 'bug-flash');
+      window.setTimeout(function () {
+        fs.textContent = 'HORS LIGNE';
+        fs.classList.remove('on', 'bug-flash');
+        fs.classList.add('offline');
+      }, 700);
+    }, 30000);
+  }
+
+})();
+</script>
+
+
+</body></html>
