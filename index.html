@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<!-- saved from url=(0071)file:///Users/foxcore/EVA%20projet/site%20web/EVA%20LABORATOIRE%20.html -->
-<html lang="fr"><!--
+<html lang="fr">
+<!--
 ════════════════════════════════════════════════════════════════════════
-  EVA LABORATOIRE 
+  EVA LABORATOIRE // GREYTOWN — ÉDITION « DDR-VERB / TERMINAL »
 ════════════════════════════════════════════════════════════════════════
-
+  ▸ Fichier unique : index.html — HTML + CSS + JS (aucune dépendance)
 ════════════════════════════════════════════════════════════════════════
---><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+-->
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EVA LABORATOIRE // GREYTOWN — Dossier confidentiel</title>
 <meta name="description" content="Eva Laboratoire — rap et musique électronique expérimentale. Limoges, Greytown. Ce véhicule ne prend pas de voyageur.">
@@ -15,15 +16,15 @@
 
 <style>
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ① VARIABLES — Palette « DDR-VERB » (d'après le plugin)          ║
+   ║  ① VARIABLES — Palette « DDR-VERB » & « FRINGE »                 ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 :root{
-  /* --- Fonds --- */
+  /* --- Fonds DDR-VERB --- */
   --bg:           #080606;
   --panel:        #140b0b;
   --panel-inner:  #1c0f0f;
   
-  /* --- Accents --- */
+  /* --- Accents DDR-VERB --- */
   --red:          #e61c1c;
   --red-dim:      #5c1414;
   --red-glow:     rgba(230, 28, 28, 0.4);
@@ -36,6 +37,12 @@
   --text-dim:     #737373;
   --titlebar-bg:  #d4cfc7;
   --titlebar-tx:  #1a1a1a; 
+
+  /* --- Palette FRINGE (Image Bleu/Cyan) --- */
+  --fringe-bg:        #050a10;
+  --fringe-cyan:      #00f0ff;
+  --fringe-dim:       #0a3a40;
+  --fringe-glow:      rgba(0, 240, 255, 0.4);
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
@@ -185,7 +192,7 @@ body{
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑥ TAMPONS                                                       ║
+   ║  ⑥ TAMPONS & CAVIARDÉS                                           ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .stamp{
   position:absolute;
@@ -208,9 +215,6 @@ body{
   box-shadow: 0 0 10px var(--red-glow), inset 0 0 10px var(--red-glow);
 }
 
-/* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑦ CAVIARDÉ                                                      ║
-   ╚══════════════════════════════════════════════════════════════════╝ */
 .redacted{
   background:#000;
   color:#000;
@@ -224,10 +228,12 @@ body{
 .redacted:hover{ 
   color:var(--red); 
   background:#1a0505;
+  border-color:var(--red);
+  text-shadow: 0 0 8px var(--red-glow);
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑧ TYPOGRAPHIE & HEADER                                         ║
+   ║  ⑦ TYPOGRAPHIE & HEADER                                         ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .doc-classif{
   margin:0 0 14px;
@@ -283,7 +289,7 @@ h1 .accent{color:var(--text-main); text-shadow:0 0 5px rgba(255,255,255,0.2)}
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑨ NAVIGATION                                                    ║
+   ║  ⑧ NAVIGATION & BOUTONS HEADER                                  ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .tabs{
   display:flex;
@@ -317,8 +323,31 @@ h1 .accent{color:var(--text-main); text-shadow:0 0 5px rgba(255,255,255,0.2)}
 }
 .tabs a:active{transform:translate(1px,1px)}
 
+/* Nouveau bouton FRINGE dans le header */
+.btn-fringe-header {
+  display:inline-block;
+  margin-top: 15px;
+  padding: 7px 13px;
+  background: var(--fringe-bg);
+  color: var(--fringe-cyan);
+  border: 1px solid var(--fringe-dim);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 240, 255, 0.1);
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.btn-fringe-header:hover {
+  background: var(--fringe-cyan);
+  color: #000;
+  box-shadow: 0 0 10px var(--fringe-glow);
+}
+
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑩ TICKER                                                        ║
+   ║  ⑨ TICKER                                                        ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .ticker{
   overflow:hidden;
@@ -344,7 +373,229 @@ h1 .accent{color:var(--text-main); text-shadow:0 0 5px rgba(255,255,255,0.2)}
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑪ LEAD & FICHES MEMBRES                                         ║
+   ║  ⑩ MENUS DÉROULANTS (ACCORDÉON)                                  ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.dropdown-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.retro-dropdown {
+  border: 1px solid var(--red-dim);
+  background: #0a0505;
+}
+.retro-dropdown summary {
+  padding: 8px 12px;
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: var(--orange);
+  cursor: pointer;
+  list-style: none;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.retro-dropdown summary::-webkit-details-marker {
+  display: none;
+}
+.retro-dropdown summary:hover {
+  background: rgba(255, 153, 0, 0.1);
+}
+.retro-dropdown[open] summary {
+  border-bottom: 1px dashed var(--red-dim);
+  color: var(--red);
+}
+.dropdown-content {
+  padding: 12px;
+  font-size: 11px;
+  color: var(--text-main);
+  background: #140b0b;
+}
+
+/* Liens spécifiques des menus */
+.manifeste-link, .pline-link {
+  display: block;
+  color: var(--orange);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 11px;
+  letter-spacing: .05em;
+  padding: 10px;
+  background: rgba(255, 153, 0, 0.05);
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+.manifeste-link:hover, .pline-link:hover {
+  background: rgba(255, 153, 0, 0.15);
+  color: #fff;
+  padding-left: 15px;
+  text-shadow: 0 0 8px var(--orange);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑪ FENÊTRES MODALES (POP-UP)                                     ║
+   ╚══════════════════════════════════════════════════════════════════╝ */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- Style de base de la fenêtre (DDR-VERB) --- */
+.modal-window {
+  width: 90%;
+  max-width: 600px;
+  background: var(--panel);
+  border: 2px solid var(--red);
+  box-shadow: 0 0 20px var(--red-glow), inset 0 0 20px rgba(0,0,0,0.8);
+  transform: translateY(20px);
+  transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .modal-window {
+  transform: translateY(0);
+}
+
+.modal-titlebar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--titlebar-bg);
+  color: var(--titlebar-tx);
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+}
+.modal-close:hover { color: var(--red); }
+
+.modal-body {
+  padding: 20px;
+  font-size: 12px;
+  color: var(--text-main);
+  max-height: 70vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Effet scanlines modale DDR-VERB */
+.modal-body::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 2;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+/* --- Style spécifique pour la fenêtre FRINGE (Bleu/Cyan) --- */
+.modal-window.fringe-theme {
+  background: var(--fringe-bg);
+  border: 2px solid var(--fringe-cyan);
+  box-shadow: 0 0 20px var(--fringe-glow), inset 0 0 20px rgba(0,0,0,0.8);
+}
+.fringe-theme .modal-titlebar {
+  background: #0a1520; /* Barre de titre sombre */
+  color: var(--fringe-cyan);
+  border-bottom: 1px solid var(--fringe-dim);
+}
+.fringe-theme .modal-close { color: var(--fringe-cyan); }
+.fringe-theme .modal-close:hover { color: #fff; }
+
+.fringe-theme h2 {
+  color: var(--fringe-cyan);
+  text-shadow: 0 0 5px var(--fringe-glow);
+}
+
+/* Caviardé spécifique au thème FRINGE */
+.fringe-theme .redacted {
+  border-color: var(--fringe-dim);
+}
+.fringe-theme .redacted:hover {
+  color: var(--fringe-cyan);
+  background: #02151c;
+  border-color: var(--fringe-cyan);
+  text-shadow: 0 0 8px var(--fringe-glow);
+}
+
+/* Petits boutons/indicateurs style plugin FRINGE */
+.fringe-ui-panel {
+  background: #03070c;
+  border: 1px solid var(--fringe-dim);
+  padding: 10px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--fringe-dim);
+  text-transform: uppercase;
+}
+.fringe-ui-panel span { color: var(--fringe-cyan); }
+
+.fringe-alert {
+  background: rgba(0, 240, 255, 0.1); 
+  border-left: 2px solid var(--fringe-cyan); 
+  padding: 10px; 
+  margin-top: 20px;
+}
+.fringe-alert p {
+  margin: 0; 
+  color: var(--fringe-cyan); 
+  font-size: 11px; 
+  text-shadow: 0 0 3px var(--fringe-glow);
+}
+
+/* Bouton de téléchargement JSFX */
+.btn-fringe-download {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--fringe-cyan);
+  border: 1px solid var(--fringe-cyan);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+  font-family: inherit;
+}
+.btn-fringe-download:hover {
+  background: var(--fringe-cyan);
+  color: #000;
+  box-shadow: 0 0 15px var(--fringe-glow);
+}
+
+/* ╔══════════════════════════════════════════════════════════════════╗
+   ║  ⑫ LEAD & FICHES MEMBRES                                         ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .lead{
   margin:0 0 16px;
@@ -469,7 +720,7 @@ table.spec tr + tr td{border-top:1px dotted #2a1515}
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑫ BOUTONS                                                       ║
+   ║  ⑬ BOUTONS                                                       ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .btn{
   display:inline-block;
@@ -519,7 +770,7 @@ table.spec tr + tr td{border-top:1px dotted #2a1515}
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑬ SORTIES / DISCOGRAPHIE                                        ║
+   ║  ⑭ SORTIES / DISCOGRAPHIE                                        ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .release{
   background:var(--panel-inner);
@@ -590,7 +841,7 @@ table.tracks td.d{
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑭ FOOTER & STATUTS                                              ║
+   ║  ⑮ FOOTER & STATUTS                                              ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .made{
   margin:0 0 14px;
@@ -657,6 +908,22 @@ table.tracks td.d{
   color:var(--red);
 }
 
+/* Lien discret pour le Dossier Morpheme */
+.discret-link {
+  display: inline-block;
+  margin-top: 15px;
+  color: var(--red-dim);
+  font-size: 10px;
+  text-decoration: none;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.discret-link:hover {
+  color: var(--red);
+  text-shadow: 0 0 5px var(--red-glow);
+}
+
 .legal{
   margin:12px 0 0;
   font-size:9.5px;
@@ -671,7 +938,7 @@ a{color:var(--text-main)}
 a:hover{color:var(--red)}
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑮ CLICK-SAT (Saturation au clic)                                ║
+   ║  ⑯ CLICK-SAT (Saturation au clic)                                ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .click-sat{
   animation: click-sat .35s ease-out 1;
@@ -684,7 +951,7 @@ a:hover{color:var(--red)}
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑯ RESPONSIVE & MOUVEMENT RÉDUIT                                 ║
+   ║  ⑰ RESPONSIVE & MOUVEMENT RÉDUIT                                 ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 @media (max-width:620px){
   body{font-size:13px}
@@ -704,7 +971,7 @@ a:hover{color:var(--red)}
     transition:none !important;
   }
   .scanlines,.grain,.footer-rain,.ticker span,.blink,
-  .click-sat,.badge.bug-flash{animation:none !important}
+  .click-sat,.badge.bug-flash,.modal-overlay,.modal-window{animation:none !important; transition:none !important;}
 }
 </style>
 </head>
@@ -715,14 +982,14 @@ a:hover{color:var(--red)}
 <div class="scanlines" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
 
-<!-- ① BANDEAU HAUT -->
+<!-- BANDEAU HAUT -->
 <div class="classif-top" role="note">
   ■ DIFFUSION RESTREINTE — NE PAS DIVULGUER ■
 </div>
 
 <div class="wrap">
 
-  <!-- ② HEADER -->
+  <!-- HEADER -->
   <header class="panel" data-watermark="CONFIDENTIEL">
 
     <span class="stamp" aria-hidden="true">SECRET DÉFENSE</span>
@@ -739,7 +1006,7 @@ a:hover{color:var(--red)}
         CLASSIFICATION : CONFIDENTIEL / DIFFUSION RESTREINTE
       </p>
 
-      <h1 class="">
+      <h1>
         EVA LABORATOIRE <span class="slash">//</span>
         <span class="accent">GREYTOWN</span>
       </h1>
@@ -752,22 +1019,59 @@ a:hover{color:var(--red)}
 
       <nav class="tabs" aria-label="Navigation principale">
         <a href="https://instagram.com/eva.laboratoire" target="_blank" rel="noopener noreferrer">Instagram</a>
-        <!-- Lien YouTube corrigé ici -->
-        <a href="https://www.youtube.com/@EVAlab87" target="_blank" rel="noopener noreferrer" class="">YouTube</a>
+        <a href="https://www.youtube.com/@EVAlab87" target="_blank" rel="noopener noreferrer">YouTube</a>
         <a href="https://open.spotify.com/artist/2fHfn9GHrnoTUINvqWvrSN?si=NVCnITWvStmDAP2S77kmoQ&amp;utm_source=copy-link" target="_blank" rel="noopener noreferrer">Spotify</a>
         <a href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">Apple Music</a>
       </nav>
+
+      <!-- NOUVEAU BOUTON FRINGE DANS LE HEADER -->
+      <div style="margin-top: 15px; border-top: 1px dashed var(--red-dim); padding-top: 15px;">
+        <button class="btn-fringe-header" onclick="ouvrirFringe()">
+          [+] ACCÉDER AU MODULE FRINGE
+        </button>
+      </div>
+
     </div>
   </header>
 
-  <!-- ③ TICKER -->
+  <!-- TICKER -->
   <div class="ticker" aria-hidden="true">
     <span>/// MORPHEME 2 IS A LIE /// JLM 2027 /// DIFFUSION RESTREINTE /// NE PAS DIVULGUER /// ARCHIVES SONORES /// I AM IN HELL HELP ME — EP DISPONIBLE /// EVA.FM — DISPONIBLE /// FABRIQUÉ DURANT LA RÉVOLUTION /// CE VÉHICULE NE PREND PAS DE VOYAGEUR /// A VÉCU LE 25 VENDÉMIAIRE AN 235 /// </span>
   </div>
 
+  <!-- MENUS DÉROULANTS -->
+  <div class="dropdown-container">
+    
+    <!-- Menu Manifeste -->
+    <details class="retro-dropdown" style="border-color: var(--red);">
+      <summary style="color: var(--red); text-shadow: 0 0 5px var(--red-glow);">
+        [+] MANIFESTE
+      </summary>
+      <div class="dropdown-content" style="border-left: 2px solid var(--red);">
+        <a href="https://www.bibliomarxiste.net/" target="_blank" rel="noopener noreferrer" class="manifeste-link">
+          ► DONNÉE NON NÉGLIGEABLE, LECTURE OBLIGATOIRE
+        </a>
+      </div>
+    </details>
+
+    <!-- Menu Dossier Pline (Prêt pour le PDF) -->
+    <details class="retro-dropdown" style="border-color: var(--orange);">
+      <summary style="color: var(--orange);">
+        [+] DOSSIER PLINE
+      </summary>
+      <div class="dropdown-content" style="border-left: 2px solid var(--orange);">
+        <!-- Lien vers le PDF à uploader sur GitHub -->
+        <a href="PDFMASTER.PDF" target="_blank" rel="noopener noreferrer" class="pline-link">
+          ► OUVRIR LE MASTER (PDF)
+        </a>
+      </div>
+    </details>
+
+  </div>
+
   <main>
 
-    <!-- ④ SECTION MEMBRES -->
+    <!-- SECTION MEMBRES -->
     <section class="panel" id="laboratoire" data-watermark="AGENTS">
 
       <div class="titlebar">
@@ -788,13 +1092,13 @@ a:hover{color:var(--red)}
               <h3>FM <span class="alias">/ <span class="redacted" title="Alias non divulgué">██████████</span></span></h3>
             </div>
             <table class="spec">
-              <tbody><tr><th>Fonction</th><td>Productrice · Ingénieure du son</td></tr>
+              <tr><th>Fonction</th><td>Productrice · Ingénieure du son</td></tr>
               <tr><th>Nom de naissance</th><td><span class="redacted" title="Caviardé — accès restreint">████████████</span></td></tr>
               <tr><th>Équipement</th><td>MANIFESTE, synthétiseur modulaire, console analogique</td></tr>
               <tr><th>Spécialité</th><td>EXPÉRIMENTALE, INGÉNIERIE</td></tr>
               <tr><th>Matricule</th><td>FM-<span class="redacted" title="Caviardé — accès restreint">██-███</span></td></tr>
               <tr><th>Statut</th><td><span class="badge on">ACTIF</span></td></tr>
-            </tbody></table>
+            </table>
             <p class="note">
               Travaille uniquement sur REAPER. Ancienne membre de la cellule « onion »,
               sujette PTSD.
@@ -808,13 +1112,13 @@ a:hover{color:var(--red)}
               <h3>SETHAM</h3>
             </div>
             <table class="spec">
-              <tbody><tr><th>Fonction</th><td>Rappeur · Voix · Écriture</td></tr>
+              <tr><th>Fonction</th><td>Rappeur · Voix · Écriture</td></tr>
               <tr><th>Identité civile</th><td><span class="redacted" title="Caviardé — accès restreint">████████</span></td></tr>
               <tr><th>Équipement</th><td>Micro, magnétophone portable, carnet, drapeau</td></tr>
               <tr><th>Spécialité</th><td>Flow de contrebande, chant révolutionnaire</td></tr>
               <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">███████████████</span></td></tr>
               <tr><th>Statut</th><td><span class="badge on">ACTIF</span></td></tr>
-            </tbody></table>
+            </table>
             <p class="note">
               Voix et plume du laboratoire. Trotskiste notoire.
             </p>
@@ -824,17 +1128,17 @@ a:hover{color:var(--red)}
           <article class="fiche">
             <div class="fiche-head">
               <span class="idx">Fiche 03</span>
-              <h3 class="">FAUNEFOSSE <span class="alias">/ Archiviste</span></h3>
+              <h3>FAUNEFOSSE <span class="alias">/ Archiviste</span></h3>
             </div>
             <table class="spec">
-              <tbody><tr><th class="">Fonction</th><td>Collaborateur externe · Archiviste</td></tr>
-              <tr><th class="">Formation</th><td>Masterant en histoire antique</td></tr>
+              <tr><th>Fonction</th><td>Collaborateur externe · Archiviste</td></tr>
+              <tr><th>Formation</th><td>Masterant en histoire antique</td></tr>
               <tr><th>Spécialité</th><td>Savoirs anciens et oubliés, exhumés puis remis en circulation</td></tr>
               <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">███████████████</span></td></tr>
               <tr><th>Statut</th><td>
                 <span class="badge offline" id="faunefosse-status">HORS LIGNE</span>
               </td></tr>
-            </tbody></table>
+            </table>
             <p class="note">
               Savant fou détenteur de savoirs perdus et oubliés qu'il met au
               profit des expériences du laboratoire.
@@ -847,7 +1151,7 @@ a:hover{color:var(--red)}
       </div>
     </section>
 
-    <!-- ⑤ SECTION DISCOGRAPHIE -->
+    <!-- SECTION DISCOGRAPHIE -->
     <section class="panel" id="archives" data-watermark="RÉSERVÉ">
 
       <div class="titlebar">
@@ -870,10 +1174,10 @@ a:hover{color:var(--red)}
           </div>
           <div class="release-body">
             <table class="tracks">
-              <tbody><tr><td class="n">01</td><td>I AM IN HELL HELP ME</td><td class="d">piste</td></tr>
+              <tr><td class="n">01</td><td>I AM IN HELL HELP ME</td><td class="d">piste</td></tr>
               <tr><td class="n">02</td><td>Nomade</td>             <td class="d">piste</td></tr>
               <tr><td class="n">03</td><td>Léviathan</td>          <td class="d">piste</td></tr>
-            </tbody></table>
+            </table>
             <div class="row">
               <a class="btn btn-sp small" href="https://open.spotify.com/artist/2fHfn9GHrnoTUINvqWvrSN?si=NVCnITWvStmDAP2S77kmoQ&amp;utm_source=copy-link" target="_blank" rel="noopener noreferrer">► Écouter sur Spotify</a>
               <a class="btn btn-am small" href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">► Écouter sur Apple Music</a>
@@ -890,10 +1194,10 @@ a:hover{color:var(--red)}
           </div>
           <div class="release-body">
             <table class="tracks">
-              <tbody><tr><td class="n">01</td><td>Métal Hurlant</td>       <td class="d">piste</td></tr>
+              <tr><td class="n">01</td><td>Métal Hurlant</td>       <td class="d">piste</td></tr>
               <tr><td class="n">02</td><td>SURCHAUFFE</td>          <td class="d">piste</td></tr>
               <tr><td class="n">03</td><td>Démarrage machine</td>   <td class="d">piste</td></tr>
-            </tbody></table>
+            </table>
             <div class="row">
               <a class="btn btn-sp small" href="https://open.spotify.com/artist/2fHfn9GHrnoTUINvqWvrSN?si=NVCnITWvStmDAP2S77kmoQ&amp;utm_source=copy-link" target="_blank" rel="noopener noreferrer">► Écouter sur Spotify</a>
               <a class="btn btn-am small" href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">► Écouter sur Apple Music</a>
@@ -906,7 +1210,7 @@ a:hover{color:var(--red)}
 
   </main>
 
-  <!-- ⑥ FOOTER -->
+  <!-- FOOTER -->
   <footer class="panel">
 
     <div class="titlebar">
@@ -926,14 +1230,19 @@ a:hover{color:var(--red)}
       <div class="statusbar">
         <span>
           Compteur de visites :
-          <span class="counter" id="counter" aria-label="Compteur de visites">000008</span>
+          <span class="counter" id="counter" aria-label="Compteur de visites">000000</span>
         </span>
-        <span id="clock">SYS 21:21:17</span>
+        <span id="clock">SYS --:--:--</span>
       </div>
 
       <p class="hint">
         ▸ Cliquez pour saturer la zone ▸
       </p>
+
+      <!-- Lien discret vers la modale Morpheme -->
+      <div style="text-align: center; margin-top: 10px;">
+        <a href="#" class="discret-link" onclick="ouvrirMorpheme(); return false;">[+] DOSSIER MORPHEME</a>
+      </div>
 
       <p class="legal">
         © 2026 EVA LABORATOIRE — Tous droits réservés, Limoges.<br>
@@ -946,17 +1255,111 @@ a:hover{color:var(--red)}
 
 </div>
 
-<!-- ⑦ BANDEAU BAS -->
+<!-- BANDEAU BAS -->
 <div class="classif-bottom" role="note">
   ■ NE PAS CONSERVER ■
 </div>
 
+
+<!-- ======================================================= -->
+<!-- MODALE 1 : DOSSIER MORPHEME (Rouge / DDR-VERB)           -->
+<!-- ======================================================= -->
+<div id="modal-morpheme" class="modal-overlay" onclick="fermerModale('modal-morpheme', event)">
+  <div class="modal-window" onclick="event.stopPropagation()">
+    
+    <div class="modal-titlebar">
+      <span>JS: EVA LAB - DOSSIER MORPHEME [DDR-VERB]</span>
+      <button class="modal-close" onclick="fermerModale('modal-morpheme')">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <h2 style="color: var(--red); font-size: 16px; margin-top: 0;">ACCÈS AUX ARCHIVES</h2>
+      
+      <p style="margin-bottom: 20px;">
+        <span class="redacted" title="Survolez pour lire">L'association THOT</span> a détecté un 
+        <span class="redacted" title="Survolez pour lire">prototype audio trop puissant</span>. 
+        Face à la menace de <span class="redacted" title="Survolez pour lire">duplication de la réalité</span>, 
+        l'entité a dû procéder à un <span class="redacted" title="Survolez pour lire">nerf drastique des fréquences</span>.
+      </p>
+      
+      <p style="margin-bottom: 20px;">
+        Un <span class="redacted" title="Survolez pour lire">SoundCloud caché</span> contient les versions non-bridées de ces 
+        <span class="redacted" title="Survolez pour lire">morceaux instables</span>. 
+        <span class="redacted" title="Survolez pour lire">Ne divulguez pas ce lien.</span> 
+        <span class="redacted" title="Survolez pour lire">Les agents de THOT sont sur le coup.</span>
+      </p>
+
+      <div style="background: rgba(230,28,28,0.1); border-left: 2px solid var(--red); padding: 10px; margin-top: 20px;">
+        <p style="margin: 0; color: var(--red); font-size: 11px;">
+          [ALERTE SYSTÈME] : Passez la souris sur les blocs noirs pour révéler les données classifiées.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ======================================================= -->
+<!-- MODALE 2 : MODULE FRINGE (Bleu/Cyan)                     -->
+<!-- ======================================================= -->
+<div id="modal-fringe" class="modal-overlay" onclick="fermerModale('modal-fringe', event)">
+  <div class="modal-window fringe-theme" onclick="event.stopPropagation()">
+    
+    <div class="modal-titlebar">
+      <span>JS: EVA LAB - MODULE FRINGE [EVA LAB FRINGE]</span>
+      <button class="modal-close" onclick="fermerModale('modal-fringe')">✕</button>
+    </div>
+
+    <div class="modal-body">
+      
+      <div class="fringe-ui-panel">
+        <div>INJECTION LEVEL: <span>CLIP - 0</span></div>
+        <div>AUTO-GAIN: <span>On</span></div>
+        <div>REALITY: <span>DUPLICATED</span></div>
+      </div>
+
+      <h2 style="font-size: 16px; margin-top: 0;">THÉORIE DE LA DUPLICATION</h2>
+      
+      <p style="margin-bottom: 20px; color: var(--text-main);">
+        Le module FRINGE a été conçu pour <span class="redacted" title="Survolez pour lire">isoler la réalité originelle</span>. 
+        Cependant, l'injection à <span class="redacted" title="Survolez pour lire">3.0 Drive Quant</span> a provoqué une 
+        <span class="redacted" title="Survolez pour lire">fracture spatio-temporelle</span> à Greytown.
+      </p>
+      
+      <p style="margin-bottom: 20px; color: var(--text-main);">
+        Nous vivons désormais dans la <span class="redacted" title="Survolez pour lire">seconde couche de réalité</span>. 
+        Le signal original est perdu. <span class="redacted" title="Survolez pour lire">La réalité a été supprimée</span> 
+        (REALITY DELETED). Ne touchez pas aux boutons <span class="redacted" title="Survolez pour lire">Bit Depth 16</span>.
+      </p>
+
+      <p style="margin-bottom: 20px; color: var(--text-main);">
+        <strong>Note système :</strong> Les modules d'<span class="redacted" title="Survolez pour lire">Output</span> et de <span class="redacted" title="Survolez pour lire">Clip</span> semblent instables. L'usage d'un <span class="redacted" title="Survolez pour lire">module externe de clip</span> est nécessaire pour stabiliser le signal.
+      </p>
+
+      <div class="fringe-alert">
+        <p>
+          [ALERTE] : Le signal est instable. Passez la souris sur les blocs noirs pour lire les fragments de code.
+        </p>
+      </div>
+
+      <!-- BOUTON DE TÉLÉCHARGEMENT DU PLUGIN -->
+      <div style="text-align: center; margin-top: 25px;">
+        <a href="FRINGE%20(EVA%20LAB).jsfx" download class="btn-fringe-download">▼ TÉLÉCHARGER FRINGE (EVA LAB).jsfx</a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
 <script>
-/* ⑧ JAVASCRIPT MINIMAL */
+/* JAVASCRIPT MINIMAL */
 (function () {
   'use strict';
 
-  // Compteur de visites
+  // 1. COMPTEUR DE VISITES
   var KEY = 'eva_lab_visits';
   var counterEl = document.getElementById('counter');
   var n = 0;
@@ -972,7 +1375,7 @@ a:hover{color:var(--red)}
     counterEl.textContent = s;
   }
 
-  // Horloge
+  // 2. HORLOGE
   var clockEl = document.getElementById('clock');
   function pad(v) { return v < 10 ? '0' + v : String(v); }
   function tick() {
@@ -983,7 +1386,7 @@ a:hover{color:var(--red)}
   tick();
   window.setInterval(tick, 1000);
 
-  // Saturation au clic
+  // 3. SATURATION AU CLIC
   document.addEventListener('click', function (e) {
     var target = e.target;
     if (!target || target.nodeType !== 1) { return; }
@@ -994,7 +1397,7 @@ a:hover{color:var(--red)}
     window.setTimeout(function () { target.classList.remove('click-sat'); }, 400);
   }, true);
 
-  // Bug Statut Faunefosse
+  // 4. BUG STATUT FAUNEFOSSE
   var fs = document.getElementById('faunefosse-status');
   if (fs) {
     window.setInterval(function () {
@@ -1009,8 +1412,29 @@ a:hover{color:var(--red)}
     }, 30000);
   }
 
+  // 5. GESTION DES MODALES
+  window.ouvrirModale = function(id) {
+    var modal = document.getElementById(id);
+    if (modal) {
+      modal.classList.add('active');
+    }
+  };
+
+  window.fermerModale = function(id, e) {
+    if (e && e.target.id !== id && e.type === 'click') {
+      return; 
+    }
+    var modal = document.getElementById(id);
+    if (modal) {
+      modal.classList.remove('active');
+    }
+  };
+
+  window.ouvrirMorpheme = function() { ouvrirModale('modal-morpheme'); };
+  window.ouvrirFringe = function() { ouvrirModale('modal-fringe'); };
+
 })();
 </script>
 
-
-</body></html>
+</body>
+</html>
