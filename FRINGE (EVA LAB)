@@ -1,0 +1,375 @@
+desc:FRINGE (eva lab)
+author: FM LAB
+version: 1.4
+options:gfx_clear
+options:no_meter
+
+slider1:3<0,11,0.1>--Drive Quantity
+slider2:44100<1000,44100,10>--Sample Rate Crush (Hz)
+slider3:16<2,16,0.1>--Bit Depth (Resolution)
+slider4:0<-15,15,0.1>--Output Gain (dB)
+slider5:0<0,2,1{BITCRUSHER CLASSIQUE, WORM DISTORTION, RANDOM DIGITAL CLICK}>--Saturation Mode
+slider6:0<-15,15,0.1>--Safety Clip Ceiling (dBFS)
+slider7:1<0,1,1{OFF,ON}>--Auto-Gain Toggle
+slider8:0.5<0.05,5,0.01>--Flanger Rate (Hz)
+slider9:50<0,100,1>--Flanger Depth (%)
+slider10:30<-95,95,1>--Flanger Feedback (%)
+
+in_pin:left
+in_pin:right
+out_pin:left
+out_pin:right
+
+@init
+ext_no_default_pin_ui = 1;
+pos = 0;
+is_dragging = 0;
+start_y = 0;
+start_v = 0;
+CYCLE_TIME = 180;
+timer_seconds = CYCLE_TIME;
+last_time_ms = time_precise();
+
+// Variables DSP du Bitcrusher Cyber
+sample_hold_l = 0;
+sample_hold_r = 0;
+phase_accumulator = 0;
+
+// Variables pour le Flanger (Buffer circulaire)
+flang_buf_size = srate * 0.02; // Max 20ms de délai
+flang_buf_l = 0;
+flang_buf_r = flang_buf_size + 1;
+flang_ptr = 0;
+flang_lfo = 0;
+
+// Compteurs pour la durée ultra-courte des clics numériques (Mode 2)
+click_dur_l = 0; click_dur_r = 0;
+click_val_l = 0; click_val_r = 0;
+
+// Balistique du VU-mètre
+vu_left = 0; vu_right = 0;
+vu_smooth = 0;
+peak_db = -60;
+peak_hold_timer = 0;
+
+@block
+current_time_ms = time_precise();
+current_time_ms - last_time_ms >= 1.0 ? (
+  timer_seconds > 0 ? timer_seconds -= 1 : timer_seconds = CYCLE_TIME;
+  last_time_ms = current_time_ms;
+);
+
+@slider
+gain_out = 10^(slider4/20);
+safety_ceil = 10^(min(0, slider6)/20);
+
+// Paramètres Flanger
+f_rate = slider8;
+f_depth = slider9 / 100;
+f_fb = slider10 / 100;
+flang_lfo_inc = (2 * $pi * f_rate) / srate;
+
+@sample
+sig_l = spl0; sig_r = spl1;
+
+// Protection d'entrée absolue contre les valeurs corrompues (NaN / Infini)
+(sig_l != sig_l || sig_l > 4.0 || sig_l < -4.0) ? sig_l = 0.0;
+(sig_r != sig_r || sig_r > 4.0 || sig_r < -4.0) ? sig_r = 0.0;
+
+battery_fault = timer_seconds <= 50 ? (1.0 - (timer_seconds / 50)) : 0.0;
+
+// Oscillateur interne stabilisé (pour éviter les rétroactions de BIIIIPPP à vide)
+pos += 0.04;
+pos > 6.2831853 ? pos -= 6.2831853;
+chaos_signal = sin(pos) * cos(pos * 1.2);
+
+// DOWN-SAMPLING (SAMPLE RATE CRUSH) ---
+target_sr = slider2 - (battery_fault * 500);
+target_sr = max(1000, min(srate, target_sr));
+phase_step = target_sr / srate;
+
+phase_accumulator += phase_step;
+phase_accumulator >= 1.0 ? (
+  phase_accumulator -= floor(phase_accumulator);
+  sample_hold_l = sig_l;
+  sample_hold_r = sig_r;
+);
+
+// ALGORITHMES DE DISTORSIONS AUDIO ---
+v_drive = slider1 + (battery_fault * 1.5);
+drive_factor = 1.0 + (v_drive * 1.2);
+
+auto_comp = slider7 == 1 ? (1.0 / (1.0 + (v_drive * 0.9))) : 1.0;
+
+// Entrées DSP basées sur le Sample Rate Crush
+in_l = sample_hold_l * drive_factor;
+in_r = sample_hold_r * drive_factor;
+
+slider5 == 0 ? (
+  // MODE 0: BITCRUSHER CLASSIQUE (Écrêtage dur numérique pur)
+  out_l = max(-1.0, min(1.0, in_l));
+  out_r = max(-1.0, min(1.0, in_r));
+) : slider5 == 1 ? (
+  // MODE 1: WORM DISTORTION
+  worm_mod = chaos_signal * 0.25 * (slider1 / 11);
+  out_l = sin(in_l * 1.3 + (abs(in_l) * worm_mod)) * 0.85;
+  out_r = sin(in_r * 1.3 + (abs(in_r) * worm_mod)) * 0.85;
+) : (
+  // MODE 2: RANDOM DIGITAL CLICK
+  h_l = in_l * 0.5 + 0.35 * (3.0 * in_l - 4.0 * (in_l^3)) + 0.15 * (2.0 * (in_l^2) - 1.0);
+  h_r = in_r * 0.5 + 0.35 * (3.0 * in_r - 4.0 * (in_r^3)) + 0.15 * (2.0 * (in_r^2) - 1.0);
+  
+  click_threshold = 0.9996 - (slider1 * 0.0003); 
+  
+  click_dur_l > 0 ? (
+    click_dur_l -= 1;
+    out_l = h_l + click_val_l;
+  ) : (
+    rand(1.0) > click_threshold && abs(in_l) > 0.01 ? (
+      click_dur_l = floor(rand(2)) + 1;
+      click_val_l = (rand(2.0) - 1.0) * 0.07 * (slider1 / 11);
+      out_l = h_l + click_val_l;
+    ) : (
+      out_l = h_l;
+    );
+  );
+  
+  click_dur_r > 0 ? (
+    click_dur_r -= 1;
+    out_r = h_r + click_val_r;
+  ) : (
+    rand(1.0) > click_threshold && abs(in_r) > 0.01 ? (
+      click_dur_r = floor(rand(2)) + 1;
+      click_val_r = (rand(2.0) - 1.0) * 0.07 * (slider1 / 11);
+      out_r = h_r + click_val_r;
+    ) : (
+      out_r = h_r;
+    );
+  );
+  
+  out_l = max(-1.0, min(1.0, out_l));
+  out_r = max(-1.0, min(1.0, out_r));
+);
+
+out_l *= auto_comp;
+out_r *= auto_comp;
+
+//RESOLUTION CRUSH (BIT DEPTH) ---
+bits = slider3 - (battery_fault * 1.5);
+bits = max(2.0, min(16.0, bits));
+step_quant = 1 << (bits - 1);
+step_quant <= 1 ? step_quant = 2; 
+
+out_l = floor(out_l * step_quant) / step_quant;
+out_r = floor(out_r * step_quant) / step_quant;
+
+
+// Avancement du LFO du Flanger
+flang_lfo += flang_lfo_inc;
+flang_lfo > 2 * $pi ? flang_lfo -= 2 * $pi;
+
+// Calcul du délai variable
+min_delay = 0.001 * srate;
+max_delay = 0.008 * srate;
+current_delay = min_delay + (0.5 + 0.5 * sin(flang_lfo)) * (max_delay - min_delay) * f_depth;
+
+// Lecture dans le buffer 
+r_ptr = flang_ptr - current_delay;
+r_ptr < 0 ? r_ptr += flang_buf_size;
+r_ptr_floor = floor(r_ptr);
+r_ptr_frac = r_ptr - r_ptr_floor;
+r_ptr_next = (r_ptr_floor + 1) % flang_buf_size;
+
+delayed_l = flang_buf_l[r_ptr_floor] * (1 - r_ptr_frac) + flang_buf_l[r_ptr_next] * r_ptr_frac;
+delayed_r = flang_buf_r[r_ptr_floor] * (1 - r_ptr_frac) + flang_buf_r[r_ptr_next] * r_ptr_frac;
+
+// Injection du signal actuel + feedback dans le buffer
+flang_buf_l[flang_ptr] = out_l + (delayed_l * f_fb);
+flang_buf_r[flang_ptr] = out_r + (delayed_r * f_fb);
+
+// Mixage final du Flanger (Wet / Dry)
+out_l = (out_l + delayed_l) * 0.7;
+out_r = (out_r + delayed_r) * 0.7;
+
+// Avancer le pointeur d'écriture
+flang_ptr += 1;
+flang_ptr >= flang_buf_size ? flang_ptr = 0;
+
+// Gain de sortie global
+out_l *= gain_out;
+out_r *= gain_out;
+
+// --- BRICKWALL LIMITER DE SÉCURITÉ ---
+spl0 = max(-safety_ceil, min(safety_ceil, out_l));
+spl1 = max(-safety_ceil, min(safety_ceil, out_r));
+
+(spl0 != spl0) ? spl0 = 0.0;
+(spl1 != spl1) ? spl1 = 0.0;
+
+// Assignation VU-mètre
+abs_l = abs(spl0); abs_r = abs(spl1);
+abs_l > vu_left ? vu_left += (abs_l - vu_left) * 0.3 : vu_left += (abs_l - vu_left) * 0.05;
+abs_r > vu_right ? vu_right += (abs_r - vu_right) * 0.3 : vu_right += (abs_r - vu_right) * 0.05;
+
+
+@gfx 620 620
+gfx_w = max(gfx_w, 620); gfx_h = max(gfx_h, 620);
+
+time_sec_int = floor(time_precise());
+seconds_modulo_30 = time_sec_int % 30;
+seconds_modulo_15 = time_sec_int % 15;
+
+is_seth_active = (seconds_modulo_30 >= 0 && seconds_modulo_30 < 3);
+is_777_active = (seconds_modulo_15 >= 0 && seconds_modulo_15 < 3 && !is_seth_active);
+user_is_tweaking = (is_dragging > 0 && is_dragging < 20) || is_seth_active || is_777_active;
+
+// Fond Cyberpunk sombre
+gfx_r = 0.02; gfx_g = 0.02; gfx_b = 0.04; gfx_a = 1; gfx_rect(0, 0, gfx_w, gfx_h);
+
+// En-tête principal
+gfx_setfont(1, "Impact", 22); gfx_r = 0.0; gfx_g = 0.85; gfx_b = 0.7; gfx_a = 1; gfx_x = 40; gfx_y = 25;
+gfx_drawstr("EVA LAB FRINGE");
+
+gfx_setfont(3, "Courier New", 12, 'B'); gfx_r = 0.4; gfx_g = 0.4; gfx_b = 0.5; gfx_x = gfx_w - 90; gfx_y = 30;
+gfx_drawstr("BY FM");
+
+// --- VU MÈTRE ---
+vux = 40; vuy = 65; vuw = 170; vuh = 45;
+gfx_r = 0.01; gfx_g = 0.01; gfx_b = 0.02; gfx_rect(vux, vuy, vuw, vuh);
+gfx_r = 0.0; gfx_g = 0.4; gfx_b = 0.4; gfx_line(vux, vuy, vux+vuw, vuy); gfx_line(vux, vuy, vux, vuy+vuh);
+
+instant_max = max(vu_left, vu_right);
+vu_db = 20 * log10(instant_max + 0.00001) + 6;
+vu_db < -30 ? vu_db = -30;
+vu_smooth += (vu_db - vu_smooth) * 0.22;
+vu_bar = floor(((vu_smooth + 30) / 36) * (vuw - 14));
+vu_bar = max(0, min(vuw - 14, vu_bar));
+
+i_bar = 0;
+loop(vu_bar,
+  ratio = i_bar / (vuw - 14);
+  gfx_r = 0.0; gfx_g = 0.5 + ratio * 0.5; gfx_b = 0.8 - ratio * 0.4;
+  gfx_rect(vux + 7 + i_bar, vuy + 24, 1, 14);
+  i_bar += 1;
+);
+
+vu_db > peak_db ? ( peak_db = vu_db; peak_hold_timer = srate * 1.5; ) : ( peak_hold_timer > 0 ? peak_hold_timer -= 1000 : peak_db += (-40 - peak_db) * 0.005; );
+peak_pos = floor(((peak_db + 30) / 36) * (vuw - 14));
+peak_pos = max(0, min(vuw - 14, peak_pos));
+gfx_r = 0.0; gfx_g = 0.9; gfx_b = 1.0; gfx_a = 0.85; gfx_rect(vux + 7 + peak_pos, vuy + 22, 2, 18);
+
+gfx_setfont(3, "Courier New", 10, 'B'); gfx_r = 0.0; gfx_g = 0.7; gfx_b = 0.7; gfx_a = 0.9;
+gfx_x = vux + 7; gfx_y = vuy + 8; gfx_drawstr("INJECTION LEVEL");
+gfx_x = vux + vuw - 55; gfx_drawstr("CLIP .0");
+
+// --- ZONE D'AFFICHAGE TEXTUELLE GLITCH ---
+gfx_r = 0.02; gfx_g = 0.03; gfx_b = 0.06; gfx_a = 1; gfx_rect(220, 65, 120, 45);
+pulse_blink = sin(time_precise() * 14) * 0.3 + 0.7;
+
+is_seth_active ? (
+  gfx_r = 0.0; gfx_g = 0.9; gfx_b = 0.9; gfx_a = pulse_blink; gfx_setfont(2, "Impact", 22); gfx_x = 248; gfx_y = 75; gfx_drawstr("SETH??");
+) : is_777_active ? (
+  gfx_r = 0.0; gfx_g = 0.9; gfx_b = 0.9; gfx_a = pulse_blink; gfx_setfont(2, "Impact", 24); gfx_x = 262; gfx_y = 75; gfx_drawstr("777");
+) : timer_seconds <= 50 ? (
+  gfx_r = 0.0; gfx_g = 0.8; gfx_b = 0.8; gfx_a = pulse_blink; gfx_setfont(2, "Impact", 24); gfx_x = 260; gfx_y = 75; gfx_drawstr("ERR:");
+);
+
+// --- BOUTON AUTO GAIN ---
+bx_auto = 355; by_auto = 65; bw_auto = 205; bh_auto = 45;
+m_over_auto = (mouse_x >= bx_auto && mouse_x <= bx_auto + bw_auto && mouse_y >= by_auto && mouse_y <= by_auto + bh_auto);
+mouse_cap == 1 && is_dragging == 0 ? ( m_over_auto ? ( is_dragging = 77; slider7 = 1 - slider7; slider_chg |= 1<<6; ); );
+mouse_cap == 0 && is_dragging == 77 ? is_dragging = 0;
+gfx_r = 0.02; gfx_g = 0.04; gfx_b = 0.08; gfx_a = 1; gfx_rect(bx_auto, by_auto, bw_auto, bh_auto);
+slider7 == 1 ? (gfx_r = 0.0; gfx_g = 0.7; gfx_b = 0.8;) : (gfx_r = 0.0; gfx_g = 0.4; gfx_b = 0.5;);
+gfx_setfont(3, "Courier New", 11, 'B'); gfx_x = bx_auto + 14; gfx_y = by_auto + 16;
+slider7 == 1 ? gfx_drawstr("AUTO GAIN On") : gfx_drawstr("AUTO GAIN OFF");
+
+// --- CONFIGURATION DE LA GRILLE DES POTENTIOMÈTRES ---
+kr = 32; // Rayon uniforme
+
+// LIGNE 1 : DISTORSION & CRUSH (y = 200)
+ky1 = 200;
+// 1. Drive
+kx1 = 100; m_over1 = (mouse_x >= kx1-kr && mouse_x <= kx1+kr && mouse_y >= ky1-kr && mouse_y <= ky1+kr);
+mouse_cap == 1 ? ( m_over1 && is_dragging == 0 ? ( is_dragging = 1; start_y = mouse_y; start_v = slider1; ); is_dragging == 1 ? ( slider1 = max(0, min(11, start_v + ((start_y - mouse_y) * 0.06)))); slider_chg |= 1<<0; ) : ( is_dragging == 1 ? is_dragging = 0; );
+// 2. Sample Rate
+kx2 = 280; m_over2 = (mouse_x >= kx2-kr && mouse_x <= kx2+kr && mouse_y >= ky1-kr && mouse_y <= ky1+kr);
+mouse_cap == 1 ? ( m_over2 && is_dragging == 0 ? ( is_dragging = 2; start_y = mouse_y; start_v = slider2; ); is_dragging == 2 ? ( slider2 = max(1000, min(44100, start_v + ((start_y - mouse_y) * 180)))); slider_chg |= 1<<1; ) : ( is_dragging == 2 ? is_dragging = 0; );
+// 3. Bit Depth
+kx3 = 480; m_over3 = (mouse_x >= kx3-kr && mouse_x <= kx3+kr && mouse_y >= ky1-kr && mouse_y <= ky1+kr);
+mouse_cap == 1 ? ( m_over3 && is_dragging == 0 ? ( is_dragging = 3; start_y = mouse_y; start_v = slider3; ); is_dragging == 3 ? ( slider3 = max(2, min(16, start_v + ((start_y - mouse_y) * 0.08)))); slider_chg |= 1<<2; ) : ( is_dragging == 3 ? is_dragging = 0; );
+// LIGNE 2 : CYBER FLANGER (y = 325)
+ky2 = 325;
+// 4. Flanger Rate (slider8)
+kx4 = 100; m_over4 = (mouse_x >= kx4-kr && mouse_x <= kx4+kr && mouse_y >= ky2-kr && mouse_y <= ky2+kr);
+mouse_cap == 1 ? ( m_over4 && is_dragging == 0 ? ( is_dragging = 8; start_y = mouse_y; start_v = slider8; ); is_dragging == 8 ? ( slider8 = max(0.05, min(5, start_v + ((start_y - mouse_y) * 0.02)))); slider_chg |= 1<<7; ) : ( is_dragging == 8 ? is_dragging = 0; );
+// 5. Flanger Depth (slider9)
+kx5 = 280; m_over5 = (mouse_x >= kx5-kr && mouse_x <= kx5+kr && mouse_y >= ky2-kr && mouse_y <= ky2+kr);
+mouse_cap == 1 ? ( m_over5 && is_dragging == 0 ? ( is_dragging = 9; start_y = mouse_y; start_v = slider9; ); is_dragging == 9 ? ( slider9 = max(0, min(100, start_v + ((start_y - mouse_y) * 0.5)))); slider_chg |= 1<<8; ) : ( is_dragging == 9 ? is_dragging = 0; );
+// 6. Flanger Feedback (slider10)
+kx6 = 480; m_over6 = (mouse_x >= kx6-kr && mouse_x <= kx6+kr && mouse_y >= ky2-kr && mouse_y <= ky2+kr);
+mouse_cap == 1 ? ( m_over6 && is_dragging == 0 ? ( is_dragging = 10; start_y = mouse_y; start_v = slider10; ); is_dragging == 10 ? ( slider10 = max(-95, min(95, start_v + ((start_y - mouse_y) * 0.8)))); slider_chg |= 1<<9; ) : ( is_dragging == 10 ? is_dragging = 0; );
+// --- DESSIN DES 6 POTENTIOMÈTRES ---
+gfx_setfont(3, "Courier New", 10, 'B');
+// Dessin Bouton 1
+gfx_r = 0.05; gfx_g = 0.08; gfx_b = 0.15; gfx_circle(kx1, ky1, kr, 1, 1); ang1 = ((slider1 / 11) * 270 - 135) * $pi / 180; gfx_r = 0.0; gfx_g = 0.8; gfx_b = 0.9; gfx_line(kx1, ky1, kx1 + cos(ang1) * kr, ky1 + sin(ang1) * kr, 3);
+gfx_x = kx1 - 42; gfx_y = ky1 + kr + 6; gfx_drawstr("DRIVE QUANT"); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = kx1 - 10; gfx_y = ky1 + kr + 18; gfx_drawnumber(slider1, 1);
+// Dessin Bouton 2
+gfx_r = 0.05; gfx_g = 0.08; gfx_b = 0.15; gfx_circle(kx2, ky2, kr, 1, 1); ang2 = (((slider2 - 1000) / 43100) * 270 - 135) * $pi / 180; gfx_r = 0.0; gfx_g = 0.8; gfx_b = 0.9; gfx_line(kx2, ky1, kx2 + cos(ang2) * kr, ky1 + sin(ang2) * kr, 3);
+gfx_x = kx2 - 40; gfx_y = ky1 + kr + 6; gfx_drawstr("RE-SAMPLING"); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = kx2 - 22; gfx_y = ky1 + kr + 18; slider2 >= 1000 ? ( gfx_drawnumber(slider2/1000, 1); gfx_drawstr("k") ; ) : gfx_drawnumber(slider2, 0);
+// Dessin Bouton 3
+gfx_r = 0.05; gfx_g = 0.08; gfx_b = 0.15; gfx_circle(kx3, ky1, kr, 1, 1); ang3 = (((slider3 - 2) / 14) * 270 - 135) * $pi / 180; gfx_r = 0.0; gfx_g = 0.8; gfx_b = 0.9; gfx_line(kx3, ky1, kx3 + cos(ang3) * kr, ky1 + sin(ang3) * kr, 3);
+gfx_r = 0.0; gfx_g = 0.7; gfx_b = 0.8; gfx_x = kx3 - 35; gfx_y = ky1 + kr + 6; gfx_drawstr("BIT DEPTH"); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = kx3 - 10; gfx_y = ky1 + kr + 18; gfx_drawnumber(slider3, 0);
+// Dessin Bouton 4 (Flanger Rate)
+gfx_r = 0.05; gfx_g = 0.08; gfx_b = 0.15; gfx_circle(kx4, ky2, kr, 1, 1); ang4 = (((slider8 - 0.05) / 4.95) * 270 - 135) * $pi / 180; gfx_r = 0.0; gfx_g = 0.8; gfx_b = 0.6; gfx_line(kx4, ky2, kx4 + cos(ang4) * kr, ky2 + sin(ang4) * kr, 3);
+gfx_x = kx4 - 45; gfx_y = ky2 + kr + 6; gfx_drawstr("FLANGE LFO"); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = kx4 - 18; gfx_y = ky2 + kr + 18; gfx_drawnumber(slider8, 2); gfx_drawstr("Hz");
+// Dessin Bouton 5 (Flanger Depth)
+gfx_r = 0.05; gfx_g = 0.08; gfx_b = 0.15; gfx_circle(kx5, ky2, kr, 1, 1); ang5 = ((slider9 / 100) * 270 - 135) * $pi / 180; gfx_r = 0.0; gfx_g = 0.8; gfx_b = 0.6; gfx_line(kx5, ky2, kx5 + cos(ang5) * kr, ky2 + sin(ang5) * kr, 3);
+gfx_x = kx5 - 45; gfx_y = ky2 + kr + 6; gfx_drawstr("FLANGE DPTH"); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = kx5 - 12; gfx_y = ky2 + kr + 18; gfx_drawnumber(slider9, 0); gfx_drawstr("%");
+// Dessin Bouton 6 (Flanger Feedback)
+gfx_r = 0.05; gfx_g = 0.08; gfx_b = 0.15; gfx_circle(kx6, ky2, kr, 1, 1); ang6 = (((slider10 + 95) / 190) * 270 - 135) * $pi / 180; gfx_r = 0.0; gfx_g = 0.8; gfx_b = 0.6; gfx_line(kx6, ky2, kx6 + cos(ang6) * kr, ky2 + sin(ang6) * kr, 3);
+gfx_x = kx6 - 45; gfx_y = ky2 + kr + 6; gfx_drawstr("FLANGE FEED"); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = kx6 - 12; gfx_y = ky2 + kr + 18; gfx_drawnumber(slider10, 0); gfx_drawstr("%");
+// --- SELECTEUR DIRECT RADIO DE MODES ---
+rx = 40; ry = 415; rw = 173; rh = 35;
+gfx_r = 0.01; gfx_g = 0.02; gfx_b = 0.05; gfx_rect(rx, ry, 520, rh);
+m_over_m0 = (mouse_x >= rx && mouse_x <= rx + rw && mouse_y >= ry && mouse_y <= ry + rh);
+mouse_cap == 1 && is_dragging == 0 && m_over_m0 ? ( is_dragging = 90; slider5 = 0; slider_chg |= 1<<4; );
+slider5 == 0 ? (gfx_r = 0.0; gfx_g = 0.5; gfx_b = 0.6;) : (gfx_r = 0.02; gfx_g = 0.08; gfx_b = 0.15;);
+gfx_rect(rx + 2, ry + 2, rw - 4, rh - 4); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = rx + 24; gfx_y = ry + 12; gfx_drawstr("Bitcrusher Classique");
+m_over_m1 = (mouse_x >= rx + rw && mouse_x <= rx + (rw * 2) && mouse_y >= ry && mouse_y <= ry + rh);
+mouse_cap == 1 && is_dragging == 0 && m_over_m1 ? ( is_dragging = 91; slider5 = 1; slider_chg |= 1<<4; );
+slider5 == 1 ? (gfx_r = 0.0; gfx_g = 0.5; gfx_b = 0.6;) : (gfx_r = 0.02; gfx_g = 0.08; gfx_b = 0.15;);
+gfx_rect(rx + rw + 2, ry + 2, rw - 4, rh - 4); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = rx + rw + 42; gfx_y = ry + 12; gfx_drawstr("Worm Distortion");
+m_over_m2 = (mouse_x >= rx + (rw * 2) && mouse_x <= rx + 520 && mouse_y >= ry && mouse_y <= ry + rh);
+mouse_cap == 1 && is_dragging == 0 && m_over_m2 ? ( is_dragging = 92; slider5 = 2; slider_chg |= 1<<4; );
+slider5 == 2 ? (gfx_r = 0.0; gfx_g = 0.5; gfx_b = 0.6;) : (gfx_r = 0.02; gfx_g = 0.08; gfx_b = 0.15;);
+gfx_rect(rx + (rw * 2) + 2, ry + 2, 520 - (rw * 2) - 4, rh - 4); gfx_r = 1; gfx_g = 1; gfx_b = 1; gfx_x = rx + (rw * 2) + 22; gfx_y = ry + 12; gfx_drawstr("Random Digital Click");
+mouse_cap == 0 && (is_dragging == 90 || is_dragging == 91 || is_dragging == 92) ? is_dragging = 0;
+// --- FADERS INFÉRIEURS ---
+bx = 40; by = 475; bw = 520; bh = 14;
+m_over_f4 = (mouse_x >= bx && mouse_x <= bx + bw && mouse_y >= by && mouse_y <= by + bh);
+mouse_cap == 1 ? ( m_over_f4 && is_dragging == 0 ? ( is_dragging = 4; ); is_dragging == 4 ? ( slider4 = max(-15, min(15, ((mouse_x - bx) / bw) * 30 - 15)); slider_chg |= 1<<3; ); ) : ( is_dragging == 4 ? is_dragging = 0; );
+gfx_r = 0.01; gfx_g = 0.03; gfx_b = 0.06; gfx_rect(bx, by, bw, bh);
+fill_w = ((slider4 + 15) / 30) * bw; gfx_r = 0.0; gfx_g = 0.4; gfx_b = 0.6; gfx_rect(bx, by, fill_w, bh);
+gfx_r = 0.0; gfx_g = 0.7; gfx_b = 0.8; gfx_x = bx; gfx_y = by + 18; gfx_drawstr("OUTPUT INJECTION:");
+gfx_x = bx + bw - 40; gfx_drawnumber(slider4, 1);
+cx = 40; cy = 535; cw = 520; ch = 14;
+m_over_f5 = (mouse_x >= cx && mouse_x <= cx + cw && mouse_y >= cy && mouse_y <= cy + ch);
+mouse_cap == 1 ? ( m_over_f5 && is_dragging == 0 ? ( is_dragging = 5; ); is_dragging == 5 ? ( slider6 = max(-15, min(15, ((mouse_x - cx) / cw) * 30 - 15)); slider_chg |= 1<<5; ); ) : ( is_dragging == 5 ? is_dragging = 0; );
+gfx_r = 0.01; gfx_g = 0.03; gfx_b = 0.06; gfx_rect(cx, cy, cw, ch);
+fill_wc = ((slider6 + 15) / 30) * cw; gfx_r = 0.0; gfx_g = 0.6; gfx_b = 0.5; gfx_rect(cx, cy, fill_wc, ch);
+gfx_r = 0.0; gfx_g = 0.7; gfx_b = 0.8; gfx_x = cx; gfx_y = cy + 18; gfx_drawstr("REALITY DELETED:");
+gfx_x = cx + cw - 40; gfx_drawnumber(slider6, 1);
+// Lignes d'entrelacement CRT
+(battery_fault > 0 || is_seth_active || is_777_active) ? (
+gfx_r = 0.0; gfx_g = 0.3; gfx_b = 0.4; gfx_a = (is_seth_active || is_777_active) ? 0.4 : battery_fault * 0.2;
+y_crt = 0; loop(gfx_h / 3, gfx_rect(0, y_crt, gfx_w, 1); y_crt += 3;);
+);
+// Aberration chromatique (Effet Glitch)
+user_is_tweaking ? (
+glitch_y = floor(rand(gfx_h)); glitch_h = floor(rand(50)) + 5; glitch_x = (rand(20) - 10); gfx_a = 0.4;
+gfx_blit(-1, 1, 0, 0, glitch_y, gfx_w, glitch_h, glitch_x, glitch_y, gfx_w, glitch_h);
+gfx_r = 0.0; gfx_g = 0.4; gfx_b = 0.8;
+gfx_blit(-1, 1, 0, 0, glitch_y, gfx_w, glitch_h, glitch_x + 4, glitch_y, gfx_w, glitch_h);
+gfx_r = 0.0; gfx_g = 0.0; gfx_b = 0.0; gfx_blit(-1, 1, 0, 0, glitch_y, gfx_w, glitch_h, -glitch_x - 4, glitch_y, gfx_w, glitch_h);
+);
