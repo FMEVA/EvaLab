@@ -1,11 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-<!--
-════════════════════════════════════════════════════════════════════════
-  EVA LABORATOIRE
-════════════════════════════════════════════════════════════════════════
-
--->
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,7 +9,7 @@
 
 <style>
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ① VARIABLES — Palette « DDR-VERB » & « FRINGE »                 ║
+   ║   ① VARIABLES — Palette « DDR-VERB », « FRINGE » & « PRAGUE »    ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 :root{
   /* --- Fonds DDR-VERB --- */
@@ -37,15 +31,21 @@
   --titlebar-bg:  #d4cfc7;
   --titlebar-tx:  #1a1a1a; 
 
-  /* --- Palette FRINGE (Image Bleu/Cyan) --- */
-  --fringe-bg:        #050a10;
-  --fringe-cyan:      #00f0ff;
-  --fringe-dim:       #0a3a40;
-  --fringe-glow:      rgba(0, 240, 255, 0.4);
+  /* --- Palette FRINGE (Bleu/Cyan) --- */
+  --fringe-bg:    #050a10;
+  --fringe-cyan:  #00f0ff;
+  --fringe-dim:   #0a3a40;
+  --fringe-glow:  rgba(0, 240, 255, 0.4);
+
+  /* --- Palette PRAGUE (Cuivre / Brume) --- */
+  --prague-bg:    #1a1e24;
+  --prague-copper:#b87333;
+  --prague-stone: #4a5058;
+  --prague-mist:  #2c3e50;
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ② BASE & TEXTURES                                               ║
+   ║   ② BASE & TEXTURES                                               ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
@@ -66,891 +66,374 @@ body{
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ③ AMBIANCE — Scanlines & Grain                                  ║
+   ║   ③ AMBIANCE — Scanlines & Grain                                  ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.scanlines,
-.grain{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:100;
+.scanlines, .grain {
+  position:fixed; inset:0; pointer-events:none; z-index:100;
 }
-
-.scanlines{
-  background:repeating-linear-gradient(0deg,
-    rgba(0,0,0,.35) 0px, rgba(0,0,0,.35) 1px,
-    rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px);
-  opacity:.4;
-  animation:flicker 7s steps(12) infinite;
+.scanlines {
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,.35) 0px, rgba(0,0,0,.35) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px);
+  opacity:.4; animation:flicker 7s steps(12) infinite;
 }
-@keyframes flicker{
-  0%,100%{opacity:.4}
-  47%{opacity:.35}
-  48%{opacity:.5}
-  49%{opacity:.45}
-}
-
-.grain{
+@keyframes flicker { 0%,100%{opacity:.4} 47%{opacity:.35} 48%{opacity:.5} 49%{opacity:.45} }
+.grain {
   opacity:.08;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
   animation:grainmove .55s steps(3) infinite;
 }
-@keyframes grainmove{
-  0%{background-position:0 0}
-  33%{background-position:-32px 18px}
-  66%{background-position:22px -26px}
-  100%{background-position:-14px -8px}
-}
+@keyframes grainmove { 0%{background-position:0 0} 33%{background-position:-32px 18px} 66%{background-position:22px -26px} 100%{background-position:-14px -8px} }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ④ BANDEAUX DE CLASSIFICATION                                    ║
+   ║   ④ BANDEAUX DE CLASSIFICATION                                    ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.classif-top,
-.classif-bottom{
-  background:var(--red-dim);
-  color:var(--red);
-  text-align:center;
-  padding:6px 10px;
-  font-size:10px;
-  letter-spacing:.3em;
-  text-transform:uppercase;
-  font-weight:bold;
-  text-shadow:0 0 5px var(--red-glow);
-  border-bottom:1px solid var(--red);
-  position:relative;
-  z-index:5;
+.classif-top, .classif-bottom {
+  background:var(--red-dim); color:var(--red); text-align:center; padding:6px 10px;
+  font-size:10px; letter-spacing:.3em; text-transform:uppercase; font-weight:bold;
+  text-shadow:0 0 5px var(--red-glow); border-bottom:1px solid var(--red);
+  position:relative; z-index:5;
 }
 .classif-top{ position:sticky; top:0; }
-.classif-bottom{
-  border-bottom:none;
-  border-top:1px solid var(--red);
-  margin-top:20px;
-}
+.classif-bottom{ border-bottom:none; border-top:1px solid var(--red); margin-top:20px; }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑤ CONTENEUR & PANNEAUX                                          ║
+   ║   ⑤ CONTENEUR & PANNEAUX                                          ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.wrap{
-  max-width:980px;
-  margin:0 auto;
-  padding:20px 14px 40px;
-  position:relative;
-  z-index:2;
+.wrap { max-width:980px; margin:0 auto; padding:20px 14px 40px; position:relative; z-index:2; }
+.panel {
+  background:var(--panel); border:1px solid var(--red-dim); box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  margin-bottom:20px; position:relative; overflow:hidden;
 }
-
-.panel{
-  background:var(--panel);
-  border:1px solid var(--red-dim);
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-  margin-bottom:20px;
-  position:relative;
-  overflow:hidden;
+.panel[data-watermark]::after {
+  content:attr(data-watermark); position:absolute; top:50%; left:50%;
+  transform:translate(-50%,-50%) rotate(-22deg); font-family:"Courier New",monospace;
+  font-size:clamp(50px, 9vw, 90px); font-weight:bold; letter-spacing:.28em;
+  color:rgba(230, 28, 28, 0.04); pointer-events:none; user-select:none;
+  white-space:nowrap; z-index:0; text-transform:uppercase;
 }
-
-.panel[data-watermark]::after{
-  content:attr(data-watermark);
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%) rotate(-22deg);
-  font-family:"Courier New",monospace;
-  font-size:clamp(50px, 9vw, 90px);
-  font-weight:bold;
-  letter-spacing:.28em;
-  color:rgba(230, 28, 28, 0.04);
-  pointer-events:none;
-  user-select:none;
-  white-space:nowrap;
-  z-index:0;
-  text-transform:uppercase;
-}
-
-.titlebar{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:space-between;
-  align-items:center;
-  gap:4px 10px;
-  padding:5px 10px;
-  background:var(--titlebar-bg);
-  color:var(--titlebar-tx);
-  border-bottom:2px solid #000;
-  font-size:10px;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-  font-weight:bold;
-  position:relative;
-  z-index:1;
+.titlebar {
+  display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center;
+  gap:4px 10px; padding:5px 10px; background:var(--titlebar-bg); color:var(--titlebar-tx);
+  border-bottom:2px solid #000; font-size:10px; letter-spacing:.1em;
+  text-transform:uppercase; font-weight:bold; position:relative; z-index:1;
 }
 .titlebar .r{color:#555; font-size:9.5px}
-
-.panel-body{
-  padding:16px;
-  position:relative;
-  z-index:1;
-}
+.panel-body{ padding:16px; position:relative; z-index:1; }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑥ TAMPONS & CAVIARDÉS                                           ║
+   ║   ⑥ TAMPONS & CAVIARDÉS                                           ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.stamp{
-  position:absolute;
-  top:40px;
-  right:18px;
-  padding:4px 12px;
-  font-family:"Courier New",monospace;
-  font-size:13px;
-  font-weight:bold;
-  letter-spacing:.22em;
-  text-transform:uppercase;
-  color:var(--red);
-  border:2px solid var(--red);
-  transform:rotate(-11deg);
-  opacity:.8;
-  pointer-events:none;
-  user-select:none;
-  z-index:3;
-  text-shadow:0 0 5px var(--red-glow);
-  box-shadow: 0 0 10px var(--red-glow), inset 0 0 10px var(--red-glow);
+.stamp {
+  position:absolute; top:40px; right:18px; padding:4px 12px;
+  font-family:"Courier New",monospace; font-size:13px; font-weight:bold;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--red);
+  border:2px solid var(--red); transform:rotate(-11deg); opacity:.8;
+  pointer-events:none; user-select:none; z-index:3;
+  text-shadow:0 0 5px var(--red-glow); box-shadow: 0 0 10px var(--red-glow), inset 0 0 10px var(--red-glow);
 }
-
-.redacted{
-  background:#000;
-  color:#000;
-  padding:0 4px;
-  border:1px solid var(--red-dim);
-  border-radius:1px;
-  cursor:help;
-  user-select:none;
-  transition:all .15s linear;
+.redacted {
+  background:#000; color:#000; padding:0 4px; border:1px solid var(--red-dim);
+  border-radius:1px; cursor:help; user-select:none; transition:all .15s linear;
 }
-.redacted:hover{ 
-  color:var(--red); 
-  background:#1a0505;
-  border-color:var(--red);
-  text-shadow: 0 0 8px var(--red-glow);
-}
+.redacted:hover { color:var(--red); background:#1a0505; border-color:var(--red); text-shadow: 0 0 8px var(--red-glow); }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑦ TYPOGRAPHIE & HEADER                                         ║
+   ║   ⑦ TYPOGRAPHIE & HEADER                                         ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.doc-classif{
-  margin:0 0 14px;
-  padding:5px 9px;
-  background:rgba(230, 28, 28, 0.1);
-  border-left:2px solid var(--red);
-  font-size:10.5px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:var(--red);
-  font-weight:bold;
+.doc-classif {
+  margin:0 0 14px; padding:5px 9px; background:rgba(230, 28, 28, 0.1);
+  border-left:2px solid var(--red); font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--red); font-weight:bold;
 }
-
-.blink{
-  display:inline-block;
-  color:var(--red);
-  animation:blink 1.2s steps(2) infinite;
-  font-size:11px;
-  vertical-align:middle;
-  text-shadow:0 0 8px var(--red);
+.blink {
+  display:inline-block; color:var(--red); animation:blink 1.2s steps(2) infinite;
+  font-size:11px; vertical-align:middle; text-shadow:0 0 8px var(--red);
 }
-@keyframes blink{ 50%{opacity:.1} }
-
-h1{
-  margin:0 0 10px;
-  font-size:clamp(19px,4.6vw,33px);
-  line-height:1.2;
-  letter-spacing:.05em;
-  color:var(--red);
-  text-shadow:0 0 8px var(--red-glow), 0 0 2px var(--red);
-  word-break:break-word;
-  font-weight:bold;
-  text-transform:uppercase;
+@keyframes blink { 50%{opacity:.1} }
+h1 {
+  margin:0 0 10px; font-size:clamp(19px,4.6vw,33px); line-height:1.2; letter-spacing:.05em;
+  color:var(--red); text-shadow:0 0 8px var(--red-glow), 0 0 2px var(--red);
+  word-break:break-word; font-weight:bold; text-transform:uppercase;
 }
 h1 .slash{color:var(--text-dim); font-weight:normal; text-shadow:none}
-h1 .accent{color:var(--text-main); text-shadow:0 0 5px rgba(255,255,255,0.2)}
-
-.devise{
-  margin:0 0 8px;
-  font-size:clamp(12px,2.7vw,15px);
-  color:var(--orange);
-  letter-spacing:.04em;
-  font-style:italic;
-  text-shadow:0 0 5px rgba(255, 153, 0, 0.3);
+h1 .accent{color:var(--text-main); text-shadow:0 0 5px rgba(255,255,255,0.2); cursor: pointer; transition: color 0.2s, text-shadow 0.2s;}
+h1 .accent:hover{color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6);}
+.devise {
+  margin:0 0 8px; font-size:clamp(12px,2.7vw,15px); color:var(--orange);
+  letter-spacing:.04em; font-style:italic; text-shadow:0 0 5px rgba(255, 153, 0, 0.3);
 }
-
-.genre{
-  margin:0;
-  font-size:10px;
-  letter-spacing:.2em;
-  text-transform:uppercase;
-  color:var(--text-dim);
-}
+.genre{ margin:0; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--text-dim); }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑧ NAVIGATION & BOUTONS HEADER                                  ║
+   ║   ⑧ NAVIGATION & BOUTONS HEADER                                  ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.tabs{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin-top:18px;
-  padding-top:14px;
-  border-top:1px dashed var(--red-dim);
+.tabs {
+  display:flex; flex-wrap:wrap; gap:7px; margin-top:18px;
+  padding-top:14px; border-top:1px dashed var(--red-dim);
 }
-.tabs a{
-  display:block;
-  padding:7px 13px;
-  font-family:inherit;
-  font-size:10.5px;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-  text-decoration:none;
-  color:var(--text-main);
-  background:#1a0d0d;
-  border:1px solid var(--red-dim);
-  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
-  transition:all .1s linear;
+.tabs a {
+  display:block; padding:7px 13px; font-family:inherit; font-size:10.5px;
+  letter-spacing:.1em; text-transform:uppercase; text-decoration:none;
+  color:var(--text-main); background:#1a0d0d; border:1px solid var(--red-dim);
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5); transition:all .1s linear;
 }
-.tabs a:hover,
-.tabs a:focus{
-  background:var(--red);
-  color:#000;
-  border-color:var(--red);
-  box-shadow:0 0 10px var(--red-glow);
-  outline:none;
+.tabs a:hover, .tabs a:focus {
+  background:var(--red); color:#000; border-color:var(--red);
+  box-shadow:0 0 10px var(--red-glow); outline:none;
 }
-.tabs a:active{transform:translate(1px,1px)}
-
-/* Nouveau bouton FRINGE dans le header */
+.tabs a:active{ transform:translate(1px,1px); }
 .btn-fringe-header {
-  display:inline-block;
-  margin-top: 15px;
-  padding: 7px 13px;
-  background: var(--fringe-bg);
-  color: var(--fringe-cyan);
-  border: 1px solid var(--fringe-dim);
-  font-size: 10.5px;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow: 0 0 5px rgba(0, 240, 255, 0.1);
-  transition: all 0.2s;
-  font-family: inherit;
+  display:inline-block; margin-top: 15px; padding: 7px 13px;
+  background: var(--fringe-bg); color: var(--fringe-cyan); border: 1px solid var(--fringe-dim);
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em;
+  text-decoration: none; cursor: pointer; box-shadow: 0 0 5px rgba(0, 240, 255, 0.1);
+  transition: all 0.2s; font-family: inherit;
 }
-.btn-fringe-header:hover {
-  background: var(--fringe-cyan);
-  color: #000;
-  box-shadow: 0 0 10px var(--fringe-glow);
-}
+.btn-fringe-header:hover { background: var(--fringe-cyan); color: #000; box-shadow: 0 0 10px var(--fringe-glow); }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑨ TICKER                                                        ║
+   ║   ⑨ TICKER                                                        ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.ticker{
-  overflow:hidden;
-  background:#0a0505;
-  border:1px solid var(--red-dim);
-  color:var(--red);
-  margin-bottom:20px;
-  padding:4px 0;
-}
-.ticker span{
-  display:inline-block;
-  white-space:nowrap;
-  padding-left:100%;
-  font-size:10px;
-  letter-spacing:.2em;
-  text-transform:uppercase;
-  text-shadow:0 0 5px var(--red-glow);
+.ticker { overflow:hidden; background:#0a0505; border:1px solid var(--red-dim); color:var(--red); margin-bottom:20px; padding:4px 0; }
+.ticker span {
+  display:inline-block; white-space:nowrap; padding-left:100%; font-size:10px;
+  letter-spacing:.2em; text-transform:uppercase; text-shadow:0 0 5px var(--red-glow);
   animation:scroll 38s linear infinite;
 }
-@keyframes scroll{
-  from{transform:translateX(0)}
-  to{transform:translateX(-100%)}
-}
+@keyframes scroll { from{transform:translateX(0)} to{transform:translateX(-100%)} }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑩ MENUS DÉROULANTS (ACCORDÉON)                                  ║
+   ║   ⑩ MENUS DÉROULANTS (ACCORDÉON)                                  ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.dropdown-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.retro-dropdown {
-  border: 1px solid var(--red-dim);
-  background: #0a0505;
-}
+.dropdown-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.retro-dropdown { border: 1px solid var(--red-dim); background: #0a0505; }
 .retro-dropdown summary {
-  padding: 8px 12px;
-  font-size: 10px;
-  letter-spacing: .1em;
-  color: var(--orange);
-  cursor: pointer;
-  list-style: none;
-  text-transform: uppercase;
-  font-weight: bold;
+  padding: 8px 12px; font-size: 10px; letter-spacing: .1em; color: var(--orange);
+  cursor: pointer; list-style: none; text-transform: uppercase; font-weight: bold;
 }
-.retro-dropdown summary::-webkit-details-marker {
-  display: none;
-}
-.retro-dropdown summary:hover {
-  background: rgba(255, 153, 0, 0.1);
-}
-.retro-dropdown[open] summary {
-  border-bottom: 1px dashed var(--red-dim);
-  color: var(--red);
-}
-.dropdown-content {
-  padding: 12px;
-  font-size: 11px;
-  color: var(--text-main);
-  background: #140b0b;
-}
-
-/* Liens spécifiques des menus */
+.retro-dropdown summary::-webkit-details-marker { display: none; }
+.retro-dropdown summary:hover { background: rgba(255, 153, 0, 0.1); }
+.retro-dropdown[open] summary { border-bottom: 1px dashed var(--red-dim); color: var(--red); }
+.dropdown-content { padding: 12px; font-size: 11px; color: var(--text-main); background: #140b0b; }
 .manifeste-link, .pline-link {
-  display: block;
-  color: var(--orange);
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 11px;
-  letter-spacing: .05em;
-  padding: 10px;
-  background: rgba(255, 153, 0, 0.05);
-  transition: all 0.2s ease;
-  text-transform: uppercase;
+  display: block; color: var(--orange); text-decoration: none; font-weight: bold; font-size: 11px;
+  letter-spacing: .05em; padding: 10px; background: rgba(255, 153, 0, 0.05); transition: all 0.2s ease; text-transform: uppercase;
 }
-.manifeste-link:hover, .pline-link:hover {
-  background: rgba(255, 153, 0, 0.15);
-  color: #fff;
-  padding-left: 15px;
-  text-shadow: 0 0 8px var(--orange);
-}
+.manifeste-link:hover, .pline-link:hover { background: rgba(255, 153, 0, 0.15); color: #fff; padding-left: 15px; text-shadow: 0 0 8px var(--orange); }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑪ FENÊTRES MODALES (POP-UP)                                     ║
+   ║   ⑪ FENÊTRES MODALES (POP-UP)                                     ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 .modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(2px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s ease;
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center;
+  z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
 }
-
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* --- Style de base de la fenêtre (DDR-VERB) --- */
+.modal-overlay.active { opacity: 1; pointer-events: auto; }
 .modal-window {
-  width: 90%;
-  max-width: 600px;
-  background: var(--panel);
-  border: 2px solid var(--red);
+  width: 90%; max-width: 600px; background: var(--panel); border: 2px solid var(--red);
   box-shadow: 0 0 20px var(--red-glow), inset 0 0 20px rgba(0,0,0,0.8);
-  transform: translateY(20px);
-  transition: transform 0.2s ease;
+  transform: translateY(20px); transition: transform 0.2s ease;
 }
-
-.modal-overlay.active .modal-window {
-  transform: translateY(0);
-}
-
+.modal-overlay.active .modal-window { transform: translateY(0); }
 .modal-titlebar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--titlebar-bg);
-  color: var(--titlebar-tx);
-  padding: 6px 10px;
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: .1em;
-  text-transform: uppercase;
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--titlebar-bg); color: var(--titlebar-tx); padding: 6px 10px;
+  font-size: 11px; font-weight: bold; letter-spacing: .1em; text-transform: uppercase;
 }
-
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-}
+.modal-close { background: none; border: none; font-size: 14px; font-weight: bold; color: #333; cursor: pointer; }
 .modal-close:hover { color: var(--red); }
-
 .modal-body {
-  padding: 20px;
-  font-size: 12px;
-  color: var(--text-main);
-  max-height: 70vh;
-  overflow-y: auto;
-  position: relative;
+  padding: 20px; font-size: 12px; color: var(--text-main);
+  max-height: 70vh; overflow-y: auto; position: relative;
 }
-
-/* Effet scanlines modale DDR-VERB */
 .modal-body::before {
-  content: " ";
-  display: block;
-  position: absolute;
-  top: 0; left: 0; bottom: 0; right: 0;
+  content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
   background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-  z-index: 2;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
+  z-index: 2; background-size: 100% 2px, 3px 100%; pointer-events: none;
 }
 
 /* --- Style spécifique pour la fenêtre FRINGE (Bleu/Cyan) --- */
-.modal-window.fringe-theme {
-  background: var(--fringe-bg);
-  border: 2px solid var(--fringe-cyan);
-  box-shadow: 0 0 20px var(--fringe-glow), inset 0 0 20px rgba(0,0,0,0.8);
-}
-.fringe-theme .modal-titlebar {
-  background: #0a1520; /* Barre de titre sombre */
-  color: var(--fringe-cyan);
-  border-bottom: 1px solid var(--fringe-dim);
-}
+.modal-window.fringe-theme { background: var(--fringe-bg); border: 2px solid var(--fringe-cyan); box-shadow: 0 0 20px var(--fringe-glow), inset 0 0 20px rgba(0,0,0,0.8); }
+.fringe-theme .modal-titlebar { background: #0a1520; color: var(--fringe-cyan); border-bottom: 1px solid var(--fringe-dim); }
 .fringe-theme .modal-close { color: var(--fringe-cyan); }
 .fringe-theme .modal-close:hover { color: #fff; }
-
-.fringe-theme h2 {
-  color: var(--fringe-cyan);
-  text-shadow: 0 0 5px var(--fringe-glow);
-}
-
-/* Caviardé spécifique au thème FRINGE */
-.fringe-theme .redacted {
-  border-color: var(--fringe-dim);
-}
-.fringe-theme .redacted:hover {
-  color: var(--fringe-cyan);
-  background: #02151c;
-  border-color: var(--fringe-cyan);
-  text-shadow: 0 0 8px var(--fringe-glow);
-}
-
-/* Petits boutons/indicateurs style plugin FRINGE */
-.fringe-ui-panel {
-  background: #03070c;
-  border: 1px solid var(--fringe-dim);
-  padding: 10px;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: var(--fringe-dim);
-  text-transform: uppercase;
-}
+.fringe-theme h2 { color: var(--fringe-cyan); text-shadow: 0 0 5px var(--fringe-glow); }
+.fringe-theme .redacted { border-color: var(--fringe-dim); }
+.fringe-theme .redacted:hover { color: var(--fringe-cyan); background: #02151c; border-color: var(--fringe-cyan); text-shadow: 0 0 8px var(--fringe-glow); }
+.fringe-ui-panel { background: #03070c; border: 1px solid var(--fringe-dim); padding: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; font-size: 10px; color: var(--fringe-dim); text-transform: uppercase; }
 .fringe-ui-panel span { color: var(--fringe-cyan); }
-
-.fringe-alert {
-  background: rgba(0, 240, 255, 0.1); 
-  border-left: 2px solid var(--fringe-cyan); 
-  padding: 10px; 
-  margin-top: 20px;
-}
-.fringe-alert p {
-  margin: 0; 
-  color: var(--fringe-cyan); 
-  font-size: 11px; 
-  text-shadow: 0 0 3px var(--fringe-glow);
-}
-
-/* Bouton de téléchargement JSFX */
+.fringe-alert { background: rgba(0, 240, 255, 0.1); border-left: 2px solid var(--fringe-cyan); padding: 10px; margin-top: 20px; }
+.fringe-alert p { margin: 0; color: var(--fringe-cyan); font-size: 11px; text-shadow: 0 0 3px var(--fringe-glow); }
 .btn-fringe-download {
-  display: inline-block;
+  display: inline-block; margin-top: 10px; padding: 10px 20px; background: transparent; color: var(--fringe-cyan);
+  border: 1px solid var(--fringe-cyan); text-decoration: none; font-size: 11px; font-weight: bold;
+  letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.2s;
+  box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1); font-family: inherit;
+}
+.btn-fringe-download:hover { background: var(--fringe-cyan); color: #000; box-shadow: 0 0 15px var(--fringe-glow); }
+
+/* --- Style spécifique pour la fenêtre SNAKE (Rouge/Noir) --- */
+.modal-window.snake-theme { background: #0a0505; border: 2px solid var(--red); box-shadow: 0 0 15px rgba(230, 28, 28, 0.2); }
+.snake-theme .modal-titlebar { background: #1a0d0d; color: var(--red); border-bottom: 1px solid var(--red-dim); }
+.snake-theme .modal-close { color: var(--red); }
+.snake-theme .modal-close:hover { color: #fff; }
+.snake-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 0; }
+#snake-canvas { background: #000; border: 1px solid var(--red-dim); image-rendering: pixelated; width: 300px; height: 300px; max-width: 100%; }
+.snake-score { color: var(--red); font-size: 14px; font-weight: bold; margin-bottom: 10px; letter-spacing: 2px; }
+.snake-controls { display: flex; flex-direction: column; align-items: center; margin-top: 15px; gap: 5px; }
+.snake-btn { background: #1a0d0d; color: var(--red); border: 1px solid var(--red-dim); padding: 10px 15px; font-size: 18px; font-family: inherit; cursor: pointer; border-radius: 3px; }
+.snake-btn:active { background: var(--red); color: #000; }
+.snake-row { display: flex; gap: 5px; }
+
+/* --- Style spécifique pour la fenêtre TETRIS (Prague) --- */
+.modal-window.tetris-theme { 
+  background: var(--prague-bg); 
+  border: 2px solid var(--prague-copper); 
+  box-shadow: 0 0 20px rgba(184, 115, 51, 0.4);
+}
+.tetris-theme .modal-titlebar { 
+  background: #111; 
+  color: var(--prague-copper); 
+  border-bottom: 1px solid var(--prague-stone); 
+}
+.tetris-theme .modal-close { color: var(--prague-copper); }
+.tetris-theme .modal-close:hover { color: #fff; }
+.tetris-container { 
+  display: flex; 
+  flex-direction: row; 
+  align-items: flex-start; 
+  justify-content: center; 
+  gap: 20px;
+  padding: 10px 0; 
+}
+#tetris-canvas { 
+  background: #0d1117; 
+  border: 1px solid var(--prague-stone); 
+  image-rendering: pixelated; 
+}
+.tetris-side { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 15px; 
+}
+.tetris-score { 
+  color: var(--prague-copper); 
+  font-size: 14px; 
+  font-weight: bold; 
+  letter-spacing: 2px; 
+}
+.tetris-controls { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 5px; 
   margin-top: 10px;
-  padding: 10px 20px;
-  background: transparent;
-  color: var(--fringe-cyan);
-  border: 1px solid var(--fringe-cyan);
-  text-decoration: none;
-  font-size: 11px;
-  font-weight: bold;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  transition: all 0.2s;
-  box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
-  font-family: inherit;
 }
-.btn-fringe-download:hover {
-  background: var(--fringe-cyan);
-  color: #000;
-  box-shadow: 0 0 15px var(--fringe-glow);
+.tetris-btn { 
+  background: #1a1e24; 
+  color: var(--prague-copper); 
+  border: 1px solid var(--prague-stone); 
+  padding: 10px; 
+  font-size: 16px; 
+  font-family: inherit; 
+  cursor: pointer; 
 }
+.tetris-btn:active { background: var(--prague-copper); color: #000; }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑫ LEAD & FICHES MEMBRES                                         ║
+   ║   ⑫ LEAD & FICHES MEMBRES                                         ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.lead{
-  margin:0 0 16px;
-  padding:8px 0 8px 11px;
-  border-left:2px solid var(--orange);
-  font-size:12px;
-  color:var(--text-dim);
-  font-style:italic;
+.lead { margin:0 0 16px; padding:8px 0 8px 11px; border-left:2px solid var(--orange); font-size:12px; color:var(--text-dim); font-style:italic; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:14px; }
+.fiche { background:var(--panel-inner); border:1px solid var(--red-dim); border-top:2px solid var(--red); padding:11px 12px 13px; position:relative; box-shadow: inset 0 0 15px rgba(0,0,0,0.6); }
+.fiche-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; margin-bottom:9px; padding-bottom:7px; border-bottom:1px dashed var(--red-dim); }
+.idx { font-size:9px; letter-spacing:.16em; color:var(--red); text-transform:uppercase; }
+.fiche h3 { margin:0; font-size:13.5px; letter-spacing:.08em; color:var(--text-main); text-transform:uppercase; font-weight:bold; }
+.fiche h3 .alias { color:var(--red); font-size:11px; font-weight:normal; }
+table.spec { width:100%; border-collapse:collapse; font-size:11px; }
+table.spec th { width:38%; padding:4px 8px 4px 0; text-align:left; vertical-align:top; font-weight:normal; font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); }
+table.spec td { padding:4px 0; color:var(--text-main); vertical-align:top; }
+table.spec tr + tr th, table.spec tr + tr td { border-top:1px dotted #2a1515; }
+.badge { display:inline-block; padding:1px 6px; font-size:9px; letter-spacing:.12em; border:1px solid; margin-right:4px; text-transform:uppercase; font-weight:bold; }
+.badge.on { background:rgba(74, 222, 128, 0.1); color:var(--green); border-color:var(--green); text-shadow:0 0 5px var(--green-glow); }
+.badge.ext { background:rgba(255, 153, 0, 0.1); color:var(--orange); border-color:var(--orange); }
+.badge.offline { background:rgba(230, 28, 28, 0.1); color:var(--red); border-color:var(--red); }
+.badge.bug-flash { animation: bug-status .7s steps(3) 1; }
+@keyframes bug-status {
+  0% { transform: translate(0, 0); filter: none; }
+  15% { transform: translate(-2px, 1px); filter: hue-rotate(60deg) brightness(1.4); }
+  30% { transform: translate(2px, -1px); filter: none; }
+  45% { transform: translate(-1px, 1px); filter: hue-rotate(-60deg) brightness(1.3); }
+  60% { transform: translate(1px, -1px); filter: none; }
+  75% { transform: translate(-1px, 0); filter: hue-rotate(45deg) brightness(1.25); }
+  100% { transform: translate(0, 0); filter: none; }
 }
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(255px,1fr));
-  gap:14px;
-}
-
-.fiche{
-  background:var(--panel-inner);
-  border:1px solid var(--red-dim);
-  border-top:2px solid var(--red);
-  padding:11px 12px 13px;
-  position:relative;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
-}
-
-.fiche-head{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:baseline;
-  gap:4px 8px;
-  margin-bottom:9px;
-  padding-bottom:7px;
-  border-bottom:1px dashed var(--red-dim);
-}
-.idx{
-  font-size:9px;
-  letter-spacing:.16em;
-  color:var(--red);
-  text-transform:uppercase;
-}
-.fiche h3{
-  margin:0;
-  font-size:13.5px;
-  letter-spacing:.08em;
-  color:var(--text-main);
-  text-transform:uppercase;
-  font-weight:bold;
-}
-.fiche h3 .alias{color:var(--red);font-size:11px;font-weight:normal}
-
-table.spec{
-  width:100%;
-  border-collapse:collapse;
-  font-size:11px;
-}
-table.spec th{
-  width:38%;
-  padding:4px 8px 4px 0;
-  text-align:left;
-  vertical-align:top;
-  font-weight:normal;
-  font-size:9px;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  color:var(--text-dim);
-}
-table.spec td{
-  padding:4px 0;
-  color:var(--text-main);
-  vertical-align:top;
-}
-table.spec tr + tr th,
-table.spec tr + tr td{border-top:1px dotted #2a1515}
-
-.badge{
-  display:inline-block;
-  padding:1px 6px;
-  font-size:9px;
-  letter-spacing:.12em;
-  border:1px solid;
-  margin-right:4px;
-  text-transform:uppercase;
-  font-weight:bold;
-}
-.badge.on{      
-  background:rgba(74, 222, 128, 0.1); 
-  color:var(--green); 
-  border-color:var(--green);
-  text-shadow:0 0 5px var(--green-glow);
-}
-.badge.ext{     
-  background:rgba(255, 153, 0, 0.1); 
-  color:var(--orange); 
-  border-color:var(--orange);
-}
-.badge.offline{ 
-  background:rgba(230, 28, 28, 0.1); 
-  color:var(--red); 
-  border-color:var(--red);
-}
-
-.badge.bug-flash{
-  animation: bug-status .7s steps(3) 1;
-}
-@keyframes bug-status{
-  0%   { transform: translate(0, 0);     filter: none; }
-  15%  { transform: translate(-2px, 1px); filter: hue-rotate(60deg) brightness(1.4); }
-  30%  { transform: translate(2px, -1px); filter: none; }
-  45%  { transform: translate(-1px, 1px); filter: hue-rotate(-60deg) brightness(1.3); }
-  60%  { transform: translate(1px, -1px); filter: none; }
-  75%  { transform: translate(-1px, 0);  filter: hue-rotate(45deg) brightness(1.25); }
-  100% { transform: translate(0, 0);     filter: none; }
-}
-
-.note{
-  margin:10px 0 0;
-  padding-top:8px;
-  border-top:1px dashed var(--red-dim);
-  font-size:10.5px;
-  font-style:italic;
-  color:var(--text-dim);
-}
+.note { margin:10px 0 0; padding-top:8px; border-top:1px dashed var(--red-dim); font-size:10.5px; font-style:italic; color:var(--text-dim); }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑬ BOUTONS                                                       ║
+   ║   ⑬ BOUTONS                                                       ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.btn{
-  display:inline-block;
-  margin-top:11px;
-  padding:6px 12px;
-  font-family:inherit;
-  font-size:10px;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-  text-decoration:none;
-  color:#000;
-  background:var(--orange);
-  border:1px solid #000;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 0 rgba(0,0,0,0.5);
-  cursor:pointer;
-  transition:all .08s linear;
-  font-weight:bold;
+.btn {
+  display:inline-block; margin-top:11px; padding:6px 12px; font-family:inherit; font-size:10px;
+  letter-spacing:.1em; text-transform:uppercase; text-decoration:none; color:#000; background:var(--orange);
+  border:1px solid #000; box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 2px 0 rgba(0,0,0,0.5);
+  cursor:pointer; transition:all .08s linear; font-weight:bold;
 }
-.btn:hover,.btn:focus{
-  filter:brightness(1.2);
-  outline:none;
-}
-.btn:active{
-  transform:translateY(2px);
-  box-shadow: none;
-}
-
-.btn-yt{
-  background:var(--red);
-  color:#fff;
-}
-.btn-sp{
-  background:var(--green);
-  color:#000;
-}
-.btn-am{
-  background:#d98d95;
-  color:#000;
-}
-.btn.small{padding:4px 10px;font-size:9px;margin-top:0}
-
-.row{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:12px;
-}
+.btn:hover,.btn:focus { filter:brightness(1.2); outline:none; }
+.btn:active { transform:translateY(2px); box-shadow: none; }
+.btn-yt { background:var(--red); color:#fff; }
+.btn-sp { background:var(--green); color:#000; }
+.btn-am { background:#d98d95; color:#000; }
+.btn.small { padding:4px 10px; font-size:9px; margin-top:0; }
+.row { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑭ SORTIES / DISCOGRAPHIE                                        ║
+   ║   ⑭ SORTIES / DISCOGRAPHIE                                        ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.release{
-  background:var(--panel-inner);
-  border:1px solid var(--red-dim);
-  margin-bottom:16px;
-  position:relative;
-  box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
-}
-.release:last-child{margin-bottom:0}
-
-.release-head{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:baseline;
-  gap:5px 12px;
-  padding:8px 12px;
-  background:#1a0d0d;
-  border-bottom:1px solid var(--red-dim);
-}
-.rel-code{
-  font-size:9px;
-  letter-spacing:.1em;
-  color:var(--red);
-}
-.release-head h3{
-  margin:0;
-  font-size:13px;
-  letter-spacing:.09em;
-  text-transform:uppercase;
-  color:var(--text-main);
-  font-weight:bold;
-}
-.rel-meta{
-  margin-left:auto;
-  font-size:9px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:var(--text-dim);
-}
-
-.release-body{padding:11px 12px 14px}
-
-table.tracks{
-  width:100%;
-  border-collapse:collapse;
-  font-size:11.5px;
-}
-table.tracks td{
-  padding:5px 6px;
-  border-bottom:1px dotted #2a1515;
-  color:var(--text-main);
-}
-table.tracks tr:last-child td{border-bottom:0}
-table.tracks td.n{
-  width:36px;
-  color:var(--red);
-  font-size:10px;
-  letter-spacing:.1em;
-  font-weight:bold;
-}
-table.tracks td.d{
-  text-align:right;
-  width:70px;
-  color:var(--text-dim);
-  font-size:9px;
-  letter-spacing:.12em;
-  text-transform:uppercase;
-}
+.release { background:var(--panel-inner); border:1px solid var(--red-dim); margin-bottom:16px; position:relative; box-shadow: inset 0 0 15px rgba(0,0,0,0.6); }
+.release:last-child { margin-bottom:0; }
+.release-head { display:flex; flex-wrap:wrap; align-items:baseline; gap:5px 12px; padding:8px 12px; background:#1a0d0d; border-bottom:1px solid var(--red-dim); }
+.rel-code { font-size:9px; letter-spacing:.1em; color:var(--red); }
+.release-head h3 { margin:0; font-size:13px; letter-spacing:.09em; text-transform:uppercase; color:var(--text-main); font-weight:bold; }
+.rel-meta { margin-left:auto; font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--text-dim); }
+.release-body { padding:11px 12px 14px; }
+table.tracks { width:100%; border-collapse:collapse; font-size:11.5px; }
+table.tracks td { padding:5px 6px; border-bottom:1px dotted #2a1515; color:var(--text-main); }
+table.tracks tr:last-child td { border-bottom:0; }
+table.tracks td.n { width:36px; color:var(--red); font-size:10px; letter-spacing:.1em; font-weight:bold; }
+table.tracks td.d { text-align:right; width:70px; color:var(--text-dim); font-size:9px; letter-spacing:.12em; text-transform:uppercase; }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑮ FOOTER & STATUTS                                              ║
+   ║   ⑮ FOOTER & STATUTS                                              ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.made{
-  margin:0 0 14px;
-  font-size:clamp(11px,2.6vw,13px);
-  letter-spacing:.06em;
-  color:var(--text-main);
-  text-align:center;
-  font-weight:bold;
-}
-.made .r{color:var(--red)}
-
-.footer-rain{
-  height:24px;
-  border-top:1px solid var(--red-dim);
-  border-bottom:1px solid var(--red-dim);
-  background-image:repeating-linear-gradient(90deg,
-    transparent 0px, transparent 11px,
-    rgba(230, 28, 28, .3) 11px, rgba(230, 28, 28, .3) 12px);
-  opacity:.5;
-  animation:rainfall .7s linear infinite;
-  margin:0 0 14px;
-}
-@keyframes rainfall{
-  from{background-position:0 0}
-  to{background-position:0 500px}
-}
-
-.statusbar{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:space-between;
-  gap:8px 18px;
-  padding:8px 10px;
-  background:#050202;
-  border:1px solid var(--red-dim);
-  font-size:10px;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-  color:var(--text-dim);
-}
-.counter{
-  display:inline-block;
-  margin-left:6px;
-  padding:2px 9px;
-  background:#000;
-  border:1px solid var(--green);
-  color:var(--green);
-  letter-spacing:.3em;
-  font-variant-numeric:tabular-nums;
-  text-shadow:0 0 8px var(--green-glow);
-}
-#clock{color:var(--text-dim)}
-
-.hint{
-  margin:12px 0 0;
-  padding:6px 9px;
-  background:rgba(230, 28, 28, 0.05);
-  border:1px dashed var(--red-dim);
-  text-align:center;
-  font-size:9.5px;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:var(--red);
-}
-
-/* Lien discret pour le Dossier Morpheme */
-.discret-link {
-  display: inline-block;
-  margin-top: 15px;
-  color: var(--red-dim);
-  font-size: 10px;
-  text-decoration: none;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  transition: color 0.2s;
-}
-.discret-link:hover {
-  color: var(--red);
-  text-shadow: 0 0 5px var(--red-glow);
-}
-
-.legal{
-  margin:12px 0 0;
-  font-size:9.5px;
-  letter-spacing:.1em;
-  text-transform:uppercase;
-  color:var(--text-dim);
-  text-align:center;
-  line-height:1.8;
-}
-
-a{color:var(--text-main)}
-a:hover{color:var(--red)}
+.made { margin:0 0 14px; font-size:clamp(11px,2.6vw,13px); letter-spacing:.06em; color:var(--text-main); text-align:center; font-weight:bold; }
+.made .r { color:var(--red); }
+.footer-rain { height:24px; border-top:1px solid var(--red-dim); border-bottom:1px solid var(--red-dim); background-image:repeating-linear-gradient(90deg, transparent 0px, transparent 11px, rgba(230, 28, 28, .3) 11px, rgba(230, 28, 28, .3) 12px); opacity:.5; animation:rainfall .7s linear infinite; margin:0 0 14px; }
+@keyframes rainfall { from{background-position:0 0} to{background-position:0 500px} }
+.statusbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 18px; padding:8px 10px; background:#050202; border:1px solid var(--red-dim); font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); }
+.counter { display:inline-block; margin-left:6px; padding:2px 9px; background:#000; border:1px solid var(--green); color:var(--green); letter-spacing:.3em; font-variant-numeric:tabular-nums; text-shadow:0 0 8px var(--green-glow); }
+#clock { color:var(--text-dim); }
+.hint { margin:12px 0 0; padding:6px 9px; background:rgba(230, 28, 28, 0.05); border:1px dashed var(--red-dim); text-align:center; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--red); }
+.discret-link { display: inline-block; margin-top: 15px; color: var(--red-dim); font-size: 10px; text-decoration: none; letter-spacing: .1em; text-transform: uppercase; transition: color 0.2s; }
+.discret-link:hover { color: var(--red); text-shadow: 0 0 5px var(--red-glow); }
+.secret-snake { color: #222; text-decoration: none; cursor: default; font-size: 10px; margin-left: 5px; }
+.secret-snake:hover { color: var(--red); cursor: pointer; text-shadow: 0 0 5px var(--red-glow); }
+.legal { margin:12px 0 0; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); text-align:center; line-height:1.8; }
+a { color:var(--text-main); }
+a:hover { color:var(--red); }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑯ CLICK-SAT (Saturation au clic)                                ║
+   ║   ⑯ CLICK-SAT (Saturation au clic)                                ║
    ╚══════════════════════════════════════════════════════════════════╝ */
-.click-sat{
-  animation: click-sat .35s ease-out 1;
-}
-@keyframes click-sat{
-  0%   { filter: saturate(1)    contrast(1);    }
-  25%  { filter: saturate(1.9)  contrast(1.2); }
-  60%  { filter: saturate(1.3)  contrast(1.05); }
-  100% { filter: saturate(1)    contrast(1);    }
+.click-sat { animation: click-sat .35s ease-out 1; }
+@keyframes click-sat {
+  0% { filter: saturate(1) contrast(1); }
+  25% { filter: saturate(1.9) contrast(1.2); }
+  60% { filter: saturate(1.3) contrast(1.05); }
+  100% { filter: saturate(1) contrast(1); }
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
-   ║  ⑰ RESPONSIVE & MOUVEMENT RÉDUIT                                 ║
+   ║   ⑰ RESPONSIVE & MOUVEMENT RÉDUIT                                 ║
    ╚══════════════════════════════════════════════════════════════════╝ */
 @media (max-width:620px){
   body{font-size:13px}
@@ -962,15 +445,12 @@ a:hover{color:var(--red)}
   .statusbar{justify-content:flex-start}
   table.spec{font-size:10.5px}
   .stamp{font-size:10px;padding:3px 8px;top:14px;right:12px;letter-spacing:.16em}
+  .tetris-container { flex-direction: column; align-items: center; }
 }
 
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation:none !important;
-    transition:none !important;
-  }
-  .scanlines,.grain,.footer-rain,.ticker span,.blink,
-  .click-sat,.badge.bug-flash,.modal-overlay,.modal-window{animation:none !important; transition:none !important;}
+  *,*::before,*::after { animation:none !important; transition:none !important; }
+  .scanlines,.grain,.footer-rain,.ticker span,.blink,.click-sat,.badge.bug-flash,.modal-overlay,.modal-window { animation:none !important; transition:none !important; }
 }
 </style>
 </head>
@@ -1005,9 +485,10 @@ a:hover{color:var(--red)}
         CLASSIFICATION : CONFIDENTIEL / DIFFUSION RESTREINTE
       </p>
 
+      <!-- MOT GREYTOWN CLIQUABLE POUR LE TETRIS -->
       <h1>
         EVA LABORATOIRE <span class="slash">//</span>
-        <span class="accent">GREYTOWN</span>
+        <span class="accent" onclick="ouvrirTetris()" title="INITIALISER PROJET PRAGUE">GREYTOWN</span>
       </h1>
 
       <p class="devise">« Ce véhicule ne prend pas de voyageur »</p>
@@ -1023,8 +504,8 @@ a:hover{color:var(--red)}
         <a href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">Apple Music</a>
       </nav>
 
-      <!-- NOUVEAU BOUTON FRINGE DANS LE HEADER -->
-      <div style="margin-top: 15px; border-top: 1px dashed var(--red-dim); padding-top: 15px;">
+      <!-- SEUL LE BOUTON FRINGE RESTE ICI -->
+      <div style="margin-top: 15px; border-top: 1px dashed var(--red-dim); padding-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
         <button class="btn-fringe-header" onclick="ouvrirFringe()">
           [+] MODULE FRINGE
         </button>
@@ -1053,13 +534,12 @@ a:hover{color:var(--red)}
       </div>
     </details>
 
-    <!-- Menu Dossier Pline (Prêt pour le PDF) -->
+    <!-- Menu Dossier Pline -->
     <details class="retro-dropdown" style="border-color: var(--orange);">
       <summary style="color: var(--orange);">
         [+] DOSSIER PLINE (prochainement)
       </summary>
       <div class="dropdown-content" style="border-left: 2px solid var(--orange);">
-        <!-- Lien vers le PDF à uploader sur GitHub -->
         <a href="PDFMASTER.PDF" target="_blank" rel="noopener noreferrer" class="pline-link">
           ► DONNéES APPROUVéS PAR LE PARTI
         </a>
@@ -1072,19 +552,14 @@ a:hover{color:var(--red)}
 
     <!-- SECTION MEMBRES -->
     <section class="panel" id="laboratoire" data-watermark="AGENTS">
-
       <div class="titlebar">
         <span>01 // Laboratoire — Dossiers membres</span>
         <span class="r">RÉF. CONF/GT/A/01 &nbsp;·&nbsp; [3 FICHES]</span>
       </div>
-
       <div class="panel-body">
-        <p class="lead">
-          Fiches techniques de la cellule Eva.
-        </p>
-
+        <p class="lead">Fiches techniques de la cellule Eva.</p>
         <div class="grid">
-          <!-- FICHE 01 : FM -->
+          <!-- FICHE 01 -->
           <article class="fiche">
             <div class="fiche-head">
               <span class="idx">Fiche 01</span>
@@ -1098,13 +573,10 @@ a:hover{color:var(--red)}
               <tr><th>Matricule</th><td>FM-<span class="redacted" title="Caviardé — accès restreint">██-███</span></td></tr>
               <tr><th>Statut</th><td><span class="badge on">ACTIF</span></td></tr>
             </table>
-            <p class="note">
-              Travaille uniquement sur REAPER. Ancienne membre de la cellule « onion »,
-              sujette PTSD.
-            </p>
+            <p class="note">Travaille uniquement sur REAPER. Ancienne membre de la cellule « onion », sujette PTSD.</p>
           </article>
 
-          <!-- FICHE 02 : SETHAM -->
+          <!-- FICHE 02 -->
           <article class="fiche">
             <div class="fiche-head">
               <span class="idx">Fiche 02</span>
@@ -1118,12 +590,10 @@ a:hover{color:var(--red)}
               <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">███████████████</span></td></tr>
               <tr><th>Statut</th><td><span class="badge on">ACTIF</span></td></tr>
             </table>
-            <p class="note">
-              Voix et plume du laboratoire. Trotskiste notoire.
-            </p>
+            <p class="note">Voix et plume du laboratoire. Trotskiste notoire.</p>
           </article>
 
-          <!-- FICHE 03 : FAUNEFOSSE -->
+          <!-- FICHE 03 -->
           <article class="fiche">
             <div class="fiche-head">
               <span class="idx">Fiche 03</span>
@@ -1134,17 +604,10 @@ a:hover{color:var(--red)}
               <tr><th>Formation</th><td>Masterant en histoire antique</td></tr>
               <tr><th>Spécialité</th><td>Savoirs anciens et oubliés, exhumés puis remis en circulation</td></tr>
               <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">███████████████</span></td></tr>
-              <tr><th>Statut</th><td>
-                <span class="badge offline" id="faunefosse-status">HORS LIGNE</span>
-              </td></tr>
+              <tr><th>Statut</th><td><span class="badge offline" id="faunefosse-status">HORS LIGNE</span></td></tr>
             </table>
-            <p class="note">
-              Savant fou détenteur de savoirs perdus et oubliés qu'il met au
-              profit des expériences du laboratoire.
-            </p>
-            <a class="btn btn-yt" href="https://www.youtube.com/@faunefosse6417" target="_blank" rel="noopener noreferrer">
-              ► Archives — @faunefosse6417
-            </a>
+            <p class="note">Savant fou détenteur de savoirs perdus et oubliés qu'il met au profit des expériences du laboratoire.</p>
+            <a class="btn btn-yt" href="https://www.youtube.com/@faunefosse6417" target="_blank" rel="noopener noreferrer">► Archives — @faunefosse6417</a>
           </article>
         </div>
       </div>
@@ -1152,19 +615,13 @@ a:hover{color:var(--red)}
 
     <!-- SECTION DISCOGRAPHIE -->
     <section class="panel" id="archives" data-watermark="RÉSERVÉ">
-
       <div class="titlebar">
         <span>02 // Discographie — Archives sonores 2026</span>
         <span class="r">RÉF. CONF/GT/A/02 &nbsp;·&nbsp; [2 RÉF.]</span>
       </div>
-
       <div class="panel-body">
-        <p class="lead">
-          Sorties 2026. Fiches de téléchargement conservées telles quelles
-          depuis le serveur d'origine.
-        </p>
+        <p class="lead">Sorties 2026. Fiches de téléchargement conservées telles quelles depuis le serveur d'origine.</p>
 
-        <!-- RELEASE 01 -->
         <article class="release">
           <div class="release-head">
             <span class="rel-code">[EVLAB-001]</span>
@@ -1184,7 +641,6 @@ a:hover{color:var(--red)}
           </div>
         </article>
 
-        <!-- RELEASE 02 -->
         <article class="release">
           <div class="release-head">
             <span class="rel-code">[EVLAB-002]</span>
@@ -1203,42 +659,30 @@ a:hover{color:var(--red)}
             </div>
           </div>
         </article>
-
       </div>
     </section>
-
   </main>
 
   <!-- FOOTER -->
   <footer class="panel">
-
     <div class="titlebar">
       <span>Statut système</span>
       <span class="r">GREYTOWN &nbsp;·&nbsp; CONF/GT/A/99</span>
     </div>
-
     <div class="panel-body">
-
       <div class="footer-rain" aria-hidden="true"></div>
-
-      <p class="made">
-        Made in Greytown <span class="r">—</span>
-        Sous la pluie et la révolution
-      </p>
-
+      <p class="made">Made in Greytown <span class="r">—</span> Sous la pluie et la révolution</p>
       <div class="statusbar">
         <span>
           agents sur écoutes :
           <span class="counter" id="counter" aria-label="Compteur de visites">000000</span>
+          <!-- Lien caché pour le Snake -->
+          <a href="#" class="secret-snake" onclick="ouvrirSnake(); return false;" title="?" aria-label="Jeu secret">.</a>
         </span>
         <span id="clock">SYS --:--:--</span>
       </div>
-
-      <p class="hint">
-        ▸ COPIE ORIGINALE SAISIE PAR DES AGENTS OCCIDENTAUX ▸
-      </p>
-
-      <!-- Lien discret vers la modale Morpheme -->
+      <p class="hint">▸ COPIE ORIGINALE SAISIE PAR DES AGENTS OCCIDENTAUX ▸</p>
+      
       <div style="text-align: center; margin-top: 10px;">
         <a href="#" class="discret-link" onclick="ouvrirMorpheme(); return false;">[+] DOSSIER MORPHEME</a>
       </div>
@@ -1248,10 +692,8 @@ a:hover{color:var(--red)}
         Site optimisé pour 800×600 · Aucun cookie · Aucun voyageur à bord.<br>
         <span class="redacted" title="Caviardé">DÉDICACE À PERSONNE, FALLAIT ÊTRE LÀ</span>
       </p>
-
     </div>
   </footer>
-
 </div>
 
 <!-- BANDEAU BAS -->
@@ -1259,99 +701,145 @@ a:hover{color:var(--red)}
   ■ NE PAS CONSERVER ■
 </div>
 
-
 <!-- ======================================================= -->
-<!-- MODALE 1 : DOSSIER MORPHEME (Rouge / DDR-VERB)           -->
+<!-- MODALE 1 : DOSSIER MORPHEME                              -->
 <!-- ======================================================= -->
 <div id="modal-morpheme" class="modal-overlay" onclick="fermerModale('modal-morpheme', event)">
   <div class="modal-window" onclick="event.stopPropagation()">
-    
     <div class="modal-titlebar">
       <span>JS: EVA LAB - DOSSIER MORPHEME [DDR-VERB]</span>
       <button class="modal-close" onclick="fermerModale('modal-morpheme')">✕</button>
     </div>
-
     <div class="modal-body">
       <h2 style="color: var(--red); font-size: 16px; margin-top: 0;">ACCÈS AUX ARCHIVES</h2>
-      
       <p style="margin-bottom: 20px;">
         <span class="redacted" title="Survolez pour lire">L'association THOT</span> a détecté un 
         <span class="redacted" title="Survolez pour lire">prototype audio trop puissant</span>. 
         Face à la menace de <span class="redacted" title="Survolez pour lire">duplication de la réalité</span>, 
         l'entité a dû procéder à un <span class="redacted" title="Survolez pour lire">nerf drastique des fréquences</span>.
       </p>
-      
       <p style="margin-bottom: 20px;">
         Un <span class="redacted" title="Survolez pour lire">SoundCloud caché</span> contient les versions non-bridées de ces 
         <span class="redacted" title="Survolez pour lire">morceaux instables</span>. 
         <span class="redacted" title="Survolez pour lire">Ne divulguez pas ce lien.</span> 
         <span class="redacted" title="Survolez pour lire">Les agents de THOT sont sur le coup.</span>
       </p>
-
       <div style="background: rgba(230,28,28,0.1); border-left: 2px solid var(--red); padding: 10px; margin-top: 20px;">
-        <p style="margin: 0; color: var(--red); font-size: 11px;">
-          [ALERTE SYSTÈME] : THOT est hors ligne, contacté votre hierarchie.
-        </p>
+        <p style="margin: 0; color: var(--red); font-size: 11px;">[ALERTE SYSTÈME] : THOT est hors ligne, contacté votre hierarchie.</p>
       </div>
     </div>
-
   </div>
 </div>
 
-
 <!-- ======================================================= -->
-<!-- MODALE 2 : MODULE FRINGE (Bleu/Cyan)                     -->
+<!-- MODALE 2 : MODULE FRINGE                                 -->
 <!-- ======================================================= -->
 <div id="modal-fringe" class="modal-overlay" onclick="fermerModale('modal-fringe', event)">
   <div class="modal-window fringe-theme" onclick="event.stopPropagation()">
-    
     <div class="modal-titlebar">
       <span>JS: EVA LAB - MODULE FRINGE [EVA LAB FRINGE]</span>
       <button class="modal-close" onclick="fermerModale('modal-fringe')">✕</button>
     </div>
-
     <div class="modal-body">
-      
       <div class="fringe-ui-panel">
         <div>INJECTION LEVEL: <span>CLIP - 0</span></div>
         <div>AUTO-GAIN: <span>On</span></div>
         <div>REALITY: <span>DUPLICATED</span></div>
       </div>
-
       <h2 style="font-size: 16px; margin-top: 0;">THÉORIE DE LA DUPLICATION</h2>
-      
       <p style="margin-bottom: 20px; color: var(--text-main);">
         Le module FRINGE a été conçu pour <span class="redacted" title="Survolez pour lire">isoler la réalité originelle</span>. 
         Cependant, l'injection à <span class="redacted" title="Survolez pour lire">3.0 Drive Quant</span> a provoqué une 
         <span class="redacted" title="Survolez pour lire">fracture spatio-temporelle</span> à Greytown.
       </p>
-      
       <p style="margin-bottom: 20px; color: var(--text-main);">
         Nous vivons désormais dans la <span class="redacted" title="Survolez pour lire">seconde couche de réalité</span>. 
         Le signal original est perdu. <span class="redacted" title="Survolez pour lire">La réalité a été supprimée</span> 
         (REALITY DELETED). Ne touchez pas aux boutons <span class="redacted" title="Survolez pour lire">Bit Depth 16</span>.
       </p>
-
       <p style="margin-bottom: 20px; color: var(--text-main);">
         <strong>Note système :</strong> Les modules d'<span class="redacted" title="Survolez pour lire">Output</span> et de <span class="redacted" title="Survolez pour lire">Clip</span> semblent instables. L'usage d'un <span class="redacted" title="Survolez pour lire">module externe de clip</span> est nécessaire pour stabiliser le signal.
       </p>
-
       <div class="fringe-alert">
-        <p>
-          [ALERTE] : signal instable. Ne pas TOUCHER le module FRINGE.
-        </p>
+        <p>[ALERTE] : signal instable. Ne pas TOUCHER le module FRINGE.</p>
       </div>
-
-      <!-- BOUTON DE TÉLÉCHARGEMENT DU PLUGIN -->
       <div style="text-align: center; margin-top: 25px;">
-        <a href="fringe_eva_lab.jsfx" download class="btn-fringe-download">▼ TÉLÉCHARGER FRINGE (EVA LAB).jsfx</a>
+        <a href="fringe_eva_lab.jsfx" download="FRINGE (EVA LAB).jsfx" class="btn-fringe-download">▼ TÉLÉCHARGER FRINGE (EVA LAB).jsfx</a>
       </div>
-
     </div>
-
   </div>
 </div>
 
+<!-- ======================================================= -->
+<!-- MODALE 3 : SNAKE (EASTER EGG)                            -->
+<!-- ======================================================= -->
+<div id="modal-snake" class="modal-overlay" onclick="fermerModale('modal-snake', event)">
+  <div class="modal-window snake-theme" onclick="event.stopPropagation()">
+    <div class="modal-titlebar">
+      <span>SYS: EVA LAB - EXECUTABLE / SNAKE.EXE</span>
+      <button class="modal-close" onclick="fermerModale('modal-snake')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="snake-container">
+        <div class="snake-score">SCORE: <span id="snake-score">0</span></div>
+        <canvas id="snake-canvas" width="300" height="300"></canvas>
+        <div class="snake-controls">
+          <button class="snake-btn" onclick="dirSnake('UP')">▲</button>
+          <div class="snake-row">
+            <button class="snake-btn" onclick="dirSnake('LEFT')">◀</button>
+            <button class="snake-btn" onclick="dirSnake('DOWN')">▼</button>
+            <button class="snake-btn" onclick="dirSnake('RIGHT')">▶</button>
+          </div>
+        </div>
+        <p style="margin-top: 15px; color: var(--text-dim); font-size: 10px; text-align: center;">
+          Utilisez les flèches du clavier ou les boutons.<br>Appuyez sur ESPACE pour mettre en pause.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- MODALE 4 : TETRIS (PRAGUE)                               -->
+<!-- ======================================================= -->
+<div id="modal-tetris" class="modal-overlay" onclick="fermerModale('modal-tetris', event)">
+  <div class="modal-window tetris-theme" onclick="event.stopPropagation()">
+    <div class="modal-titlebar">
+      <span>SYS: EVA LAB - PROJET PRAGUE / TETRIS.EXE</span>
+      <button class="modal-close" onclick="fermerModale('modal-tetris')">✕</button>
+    </div>
+    <div class="modal-body">
+      
+      <!-- Lecteur Audio Caché (LOFIFM.mp3) -->
+      <audio id="prague-audio" loop>
+        <source src="LOFIFM.mp3" type="audio/mpeg">
+        Votre navigateur ne supporte pas l'audio.
+      </audio>
+
+      <div class="tetris-container">
+        <!-- Canvas de jeu -->
+        <canvas id="tetris-canvas" width="240" height="480"></canvas>
+        
+        <!-- Panneau latéral -->
+        <div class="tetris-side">
+          <div class="tetris-score">SCORE: <span id="tetris-score">0</span></div>
+          <div class="tetris-score" style="font-size: 11px; color: var(--prague-stone);">NIVEAU: <span id="tetris-level">1</span></div>
+          
+          <div class="tetris-controls">
+            <button class="tetris-btn" onclick="tetrisMove('left')" style="grid-column: 1;">◀</button>
+            <button class="tetris-btn" onclick="tetrisRotate()" style="grid-column: 2;">↻</button>
+            <button class="tetris-btn" onclick="tetrisMove('right')" style="grid-column: 3;">▶</button>
+            <button class="tetris-btn" onclick="tetrisDrop()" style="grid-column: 1 / span 3;">▼ DROP</button>
+          </div>
+          <p style="margin-top: 15px; color: var(--prague-stone); font-size: 9px; text-align: center;">
+            Flèches pour bouger.<br>HAUT pour tourner.<br>ESPACE pour drop.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script>
 /* JAVASCRIPT MINIMAL */
@@ -1414,23 +902,336 @@ a:hover{color:var(--red)}
   // 5. GESTION DES MODALES
   window.ouvrirModale = function(id) {
     var modal = document.getElementById(id);
-    if (modal) {
-      modal.classList.add('active');
-    }
+    if (modal) modal.classList.add('active');
   };
 
   window.fermerModale = function(id, e) {
-    if (e && e.target.id !== id && e.type === 'click') {
-      return; 
-    }
+    if (e && e.target.id !== id && e.type === 'click') return;
     var modal = document.getElementById(id);
-    if (modal) {
-      modal.classList.remove('active');
+    if (modal) modal.classList.remove('active');
+    
+    // Arrêt des jeux et de la musique à la fermeture
+    if (id === 'modal-snake') pauseSnake();
+    if (id === 'modal-tetris') {
+      if (window.tetrisLoop) clearInterval(window.tetrisLoop);
+      var audio = document.getElementById('prague-audio');
+      if (audio) audio.pause();
     }
   };
 
   window.ouvrirMorpheme = function() { ouvrirModale('modal-morpheme'); };
   window.ouvrirFringe = function() { ouvrirModale('modal-fringe'); };
+
+  // 6. JEU SNAKE (Allégé)
+  var snakeCanvas = document.getElementById('snake-canvas');
+  var snakeCtx = snakeCanvas.getContext('2d');
+  var snakeScoreEl = document.getElementById('snake-score');
+  var sBox = 15, snake, sFood, sDir, sScore, sGameLoop, sPaused, sChangingDir;
+
+  function initSnake() {
+    snake = [{x: 10*sBox, y: 10*sBox}];
+    sDir = "RIGHT"; sChangingDir = false; sScore = 0; sPaused = false;
+    snakeScoreEl.textContent = sScore;
+    if(sGameLoop) clearInterval(sGameLoop);
+    genFood();
+    sGameLoop = setInterval(drawSnake, 150); 
+  }
+  function genFood() {
+    sFood = { x: Math.floor(Math.random() * 20) * sBox, y: Math.floor(Math.random() * 20) * sBox };
+    for (var i = 0; i < snake.length; i++) {
+      if (snake[i].x === sFood.x && snake[i].y === sFood.y) return genFood();
+    }
+  }
+  function drawSnake() {
+    if(sPaused) return;
+    snakeCtx.fillStyle = "#0a0505"; snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+    for (var i = 0; i < snake.length; i++) {
+      snakeCtx.fillStyle = (i === 0) ? "#ff9900" : "#e61c1c"; 
+      snakeCtx.fillRect(snake[i].x, snake[i].y, sBox-1, sBox-1);
+    }
+    snakeCtx.fillStyle = "#4ade80"; snakeCtx.fillRect(sFood.x, sFood.y, sBox-1, sBox-1);
+    
+    var sX = snake[0].x, sY = snake[0].y;
+    if (sDir === "LEFT") sX -= sBox; if (sDir === "UP") sY -= sBox;
+    if (sDir === "RIGHT") sX += sBox; if (sDir === "DOWN") sY += sBox;
+
+    if (sX === sFood.x && sY === sFood.y) { sScore++; snakeScoreEl.textContent = sScore; genFood(); }
+    else { snake.pop(); }
+    
+    var newHead = {x: sX, y: sY};
+    if (sX < 0 || sX >= snakeCanvas.width || sY < 0 || sY >= snakeCanvas.height || collision(newHead, snake)) {
+      clearInterval(sGameLoop);
+      snakeCtx.fillStyle = "rgba(230, 28, 28, 0.85)"; snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+      snakeCtx.fillStyle = "#fff"; snakeCtx.font = "20px 'Courier New'"; snakeCtx.textAlign = "center";
+      snakeCtx.fillText("GAME OVER", snakeCanvas.width/2, snakeCanvas.height/2 - 10);
+      snakeCtx.font = "12px 'Courier New'";
+      snakeCtx.fillText("Cliquez pour recommencer", snakeCanvas.width/2, snakeCanvas.height/2 + 20);
+      snakeCanvas.addEventListener('click', initSnake, {once: true});
+      return;
+    }
+    snake.unshift(newHead); sChangingDir = false;
+  }
+  function collision(head, array) {
+    for (var i = 0; i < array.length; i++) if (head.x === array[i].x && head.y === array[i].y) return true;
+    return false;
+  }
+  window.dirSnake = function(newDir) {
+    if (sChangingDir) return;
+    if (newDir === "LEFT" && sDir !== "RIGHT") { sDir = "LEFT"; sChangingDir = true; }
+    if (newDir === "UP" && sDir !== "DOWN") { sDir = "UP"; sChangingDir = true; }
+    if (newDir === "RIGHT" && sDir !== "LEFT") { sDir = "RIGHT"; sChangingDir = true; }
+    if (newDir === "DOWN" && sDir !== "UP") { sDir = "DOWN"; sChangingDir = true; }
+  };
+  window.pauseSnake = function() { sPaused = true; };
+  window.ouvrirSnake = function() { ouvrirModale('modal-snake'); setTimeout(initSnake, 100); };
+
+  // 7. JEU TETRIS (Prague)
+  var tetrisCanvas = document.getElementById('tetris-canvas');
+  var tCtx = tetrisCanvas.getContext('2d');
+  var tetrisScoreEl = document.getElementById('tetris-score');
+  var tetrisLevelEl = document.getElementById('tetris-level');
+  var COLS = 10, ROWS = 20, BLOCK = 24;
+  var board, piece, tScore = 0, tLevel = 1, tGameLoop;
+  
+  // Couleurs style Prague (Cuivre, Pierre, Brume)
+  var COLORS = [
+    null,
+    '#b87333', // Cuivre
+    '#4a5058', // Pierre
+    '#2c3e50', // Brume foncée
+    '#8c5a35', // Cuivre patiné
+    '#6e7a8a', // Gris bleuté
+    '#d4af37', // Or vieilli
+    '#5c4a3d'  // Terre cuite
+  ];
+
+  function createPiece() {
+    var pieces = [
+      [[1,1,1,1]], // I
+      [[1,1],[1,1]], // O
+      [[0,1,0],[1,1,1]], // T
+      [[1,0,0],[1,1,1]], // L
+      [[0,0,1],[1,1,1]], // J
+      [[0,1,1],[1,1,0]], // S
+      [[1,1,0],[0,1,1]]  // Z
+    ];
+    var p = pieces[Math.floor(Math.random() * pieces.length)];
+    return {
+      shape: p,
+      color: Math.floor(Math.random() * 7) + 1,
+      x: Math.floor(COLS / 2) - Math.floor(p[0].length / 2),
+      y: 0
+    };
+  }
+
+  function initTetris() {
+    board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+    piece = createPiece();
+    tScore = 0; tLevel = 1;
+    tetrisScoreEl.textContent = tScore;
+    tetrisLevelEl.textContent = tLevel;
+    if(tGameLoop) clearInterval(tGameLoop);
+    tGameLoop = setInterval(dropTetris, 800);
+    
+    // Démarrage de la musique
+    var audio = document.getElementById('prague-audio');
+    if(audio) {
+      audio.volume = 0.4;
+      audio.play().catch(function(e) { console.log("Audio bloqué par le navigateur"); });
+    }
+  }
+
+  function drawTetris() {
+    tCtx.fillStyle = '#0d1117'; // Fond nuit
+    tCtx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
+
+    // Grille de fond (lignes subtiles)
+    tCtx.strokeStyle = '#1a1e24';
+    tCtx.lineWidth = 1;
+    for (var i = 0; i <= COLS; i++) {
+      tCtx.beginPath(); tCtx.moveTo(i * BLOCK, 0); tCtx.lineTo(i * BLOCK, tetrisCanvas.height); tCtx.stroke();
+    }
+    for (var j = 0; j <= ROWS; j++) {
+      tCtx.beginPath(); tCtx.moveTo(0, j * BLOCK); tCtx.lineTo(tetrisCanvas.width, j * BLOCK); tCtx.stroke();
+    }
+
+    drawMatrix(board, 0, 0);
+    drawMatrix(piece.shape, piece.x, piece.y);
+  }
+
+  function drawMatrix(matrix, offsetX, offsetY) {
+    for (var y = 0; y < matrix.length; y++) {
+      for (var x = 0; x < matrix[y].length; x++) {
+        if (matrix[y][x] > 0) {
+          tCtx.fillStyle = COLORS[matrix[y][x]];
+          tCtx.fillRect((x + offsetX) * BLOCK, (y + offsetY) * BLOCK, BLOCK - 1, BLOCK - 1);
+          // Bordure métallique
+          tCtx.strokeStyle = '#000';
+          tCtx.strokeRect((x + offsetX) * BLOCK, (y + offsetY) * BLOCK, BLOCK - 1, BLOCK - 1);
+        }
+      }
+    }
+  }
+
+  function collide(board, piece) {
+    for (var y = 0; y < piece.shape.length; y++) {
+      for (var x = 0; x < piece.shape[y].length; x++) {
+        if (piece.shape[y][x] !== 0) {
+          var bY = y + piece.y;
+          var bX = x + piece.x;
+          if (bY >= ROWS || bX < 0 || bX >= COLS || (bY >= 0 && board[bY][bX] !== 0)) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  function merge(board, piece) {
+    piece.shape.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value !== 0 && y + piece.y >= 0) {
+          board[y + piece.y][x + piece.x] = piece.color;
+        }
+      });
+    });
+  }
+
+  // Nouvelle fonction de rotation robuste
+  function rotate(matrix) {
+    var N = matrix.length;
+    var M = matrix[0].length;
+    var result = [];
+    for (var i = 0; i < M; i++) {
+      result[i] = [];
+      for (var j = N - 1; j >= 0; j--) {
+        result[i].push(matrix[j][i]);
+      }
+    }
+    return result;
+  }
+
+  function playerRotate() {
+    var pos = piece.x;
+    var offset = 1;
+    var rotatedShape = rotate(piece.shape);
+    
+    // Wall-kick (décalage si on est contre un mur)
+    while (collide(board, {shape: rotatedShape, x: piece.x, y: piece.y})) {
+      piece.x += offset;
+      offset = -(offset + (offset > 0 ? 1 : -1));
+      if (offset > piece.shape[0].length) {
+        piece.x = pos;
+        return; // Échec de la rotation
+      }
+    }
+    piece.shape = rotatedShape;
+  }
+
+  function sweep() {
+    var rowCount = 0;
+    for (var y = ROWS - 1; y >= 0; y--) {
+      if (board[y].every(value => value !== 0)) {
+        board.splice(y, 1);
+        board.unshift(Array(COLS).fill(0));
+        rowCount++;
+        y++;
+      }
+    }
+    if (rowCount > 0) {
+      tScore += rowCount * 10;
+      tetrisScoreEl.textContent = tScore;
+      tLevel = Math.floor(tScore / 50) + 1;
+      tetrisLevelEl.textContent = tLevel;
+      clearInterval(tGameLoop);
+      tGameLoop = setInterval(dropTetris, Math.max(100, 800 - (tLevel * 50)));
+    }
+  }
+
+  function dropTetris() {
+    piece.y++;
+    if (collide(board, piece)) {
+      piece.y--;
+      merge(board, piece);
+      sweep();
+      piece = createPiece();
+      if (collide(board, piece)) {
+        clearInterval(tGameLoop);
+        tCtx.fillStyle = "rgba(26, 30, 36, 0.9)";
+        tCtx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
+        tCtx.fillStyle = "#b87333";
+        tCtx.font = "20px 'Courier New'";
+        tCtx.textAlign = "center";
+        tCtx.fillText("GAME OVER", tetrisCanvas.width/2, tetrisCanvas.height/2);
+        tCtx.font = "12px 'Courier New'";
+        tCtx.fillText("Cliquez pour relancer", tetrisCanvas.width/2, tetrisCanvas.height/2 + 30);
+        tetrisCanvas.addEventListener('click', initTetris, {once: true});
+      }
+    }
+    drawTetris();
+  }
+
+  window.tetrisMove = function(dir) {
+    piece.x += (dir === 'left' ? -1 : 1);
+    if (collide(board, piece)) piece.x += (dir === 'left' ? 1 : -1);
+    drawTetris();
+  };
+  
+  window.tetrisRotate = function() { 
+    playerRotate(); 
+    drawTetris(); 
+  };
+  
+  window.tetrisDrop = function() {
+    while (!collide(board, piece)) piece.y++;
+    piece.y--;
+    dropTetris();
+  };
+
+  window.ouvrirTetris = function() {
+    ouvrirModale('modal-tetris');
+    setTimeout(initTetris, 100);
+  };
+
+  // Événements clavier pour les deux jeux
+  document.addEventListener('keydown', function(e) {
+    var isSnakeOpen = document.getElementById('modal-snake').classList.contains('active');
+    var isTetrisOpen = document.getElementById('modal-tetris').classList.contains('active');
+
+    if (isSnakeOpen) {
+      if([37,38,39,40,32].includes(e.keyCode)) e.preventDefault();
+      if (e.keyCode === 37) dirSnake("LEFT");
+      if (e.keyCode === 38) dirSnake("UP");
+      if (e.keyCode === 39) dirSnake("RIGHT");
+      if (e.keyCode === 40) dirSnake("DOWN");
+      if (e.keyCode === 32) { sPaused = !sPaused; }
+    }
+    
+    if (isTetrisOpen) {
+      if([37,38,39,40,32].includes(e.keyCode)) e.preventDefault();
+      if (e.keyCode === 37) tetrisMove('left');
+      if (e.keyCode === 39) tetrisMove('right');
+      if (e.keyCode === 38) tetrisRotate(); // Flèche Haut = Tourner
+      if (e.keyCode === 40) { piece.y++; drawTetris(); } // Flèche Bas = Descendre plus vite
+      if (e.keyCode === 32) tetrisDrop(); // Espace = Drop
+    }
+  });
+
+  // 8. CODE KONAMI
+  var konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+  var konamiIndex = 0;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === konamiCode[konamiIndex] || e.key.toLowerCase() === konamiCode[konamiIndex]) {
+      konamiIndex++;
+      if (konamiIndex === konamiCode.length) {
+        ouvrirSnake();
+        konamiIndex = 0;
+      }
+    } else {
+      konamiIndex = 0;
+    }
+  });
 
 })();
 </script>
