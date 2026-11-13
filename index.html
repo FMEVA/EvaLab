@@ -829,7 +829,8 @@ a:hover { color:var(--red); }
             <button class="tetris-btn" onclick="tetrisMove('left')" style="grid-column: 1;">◀</button>
             <button class="tetris-btn" onclick="tetrisRotate()" style="grid-column: 2;">↻</button>
             <button class="tetris-btn" onclick="tetrisMove('right')" style="grid-column: 3;">▶</button>
-            <button class="tetris-btn" onclick="tetrisDrop()" style="grid-column: 1 / span 3;">▼ DROP</button>
+            <button class="tetris-btn" onclick="tetrisSoftDrop()" style="grid-column: 1 / span 3;">▼ DESCENDRE</button>
+            <button class="tetris-btn" onclick="tetrisHardDrop()" style="grid-column: 1 / span 3; background: var(--prague-copper); color: #000;">▼▼ DROP</button>
           </div>
           <p style="margin-top: 15px; color: var(--prague-stone); font-size: 9px; text-align: center;">
             Flèches pour bouger.<br>HAUT pour tourner.<br>ESPACE pour drop.
@@ -913,7 +914,7 @@ a:hover { color:var(--red); }
     // Arrêt des jeux et de la musique à la fermeture
     if (id === 'modal-snake') pauseSnake();
     if (id === 'modal-tetris') {
-      if (window.tetrisLoop) clearInterval(window.tetrisLoop);
+      if (window.tetrisLoopId) clearInterval(window.tetrisLoopId);
       var audio = document.getElementById('prague-audio');
       if (audio) audio.pause();
     }
@@ -985,24 +986,19 @@ a:hover { color:var(--red); }
   window.pauseSnake = function() { sPaused = true; };
   window.ouvrirSnake = function() { ouvrirModale('modal-snake'); setTimeout(initSnake, 100); };
 
-  // 7. JEU TETRIS (Prague)
+
+  // 7. JEU TETRIS (PRAGUE) - LOGIQUE REVISITÉE ET CORRIGÉE
   var tetrisCanvas = document.getElementById('tetris-canvas');
   var tCtx = tetrisCanvas.getContext('2d');
   var tetrisScoreEl = document.getElementById('tetris-score');
   var tetrisLevelEl = document.getElementById('tetris-level');
   var COLS = 10, ROWS = 20, BLOCK = 24;
-  var board, piece, tScore = 0, tLevel = 1, tGameLoop;
+  var board, piece, tScore = 0, tLevel = 1, isGameOver = false;
   
-  // Couleurs style Prague (Cuivre, Pierre, Brume)
   var COLORS = [
     null,
-    '#b87333', // Cuivre
-    '#4a5058', // Pierre
-    '#2c3e50', // Brume foncée
-    '#8c5a35', // Cuivre patiné
-    '#6e7a8a', // Gris bleuté
-    '#d4af37', // Or vieilli
-    '#5c4a3d'  // Terre cuite
+    '#b87333', '#4a5058', '#2c3e50', '#8c5a35', 
+    '#6e7a8a', '#d4af37', '#5c4a3d'  
   ];
 
   function createPiece() {
@@ -1026,26 +1022,68 @@ a:hover { color:var(--red); }
 
   function initTetris() {
     board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
-    piece = createPiece();
-    tScore = 0; tLevel = 1;
+    tScore = 0; tLevel = 1; isGameOver = false;
     tetrisScoreEl.textContent = tScore;
     tetrisLevelEl.textContent = tLevel;
-    if(tGameLoop) clearInterval(tGameLoop);
-    tGameLoop = setInterval(dropTetris, 800);
+    if(window.tetrisLoopId) clearInterval(window.tetrisLoopId);
     
-    // Démarrage de la musique
+    piece = createPiece();
+    if (collide(board, piece)) { triggerGameOver(); return; }
+    
+    window.tetrisLoopId = setInterval(tetrisLoop, 800);
+    
     var audio = document.getElementById('prague-audio');
     if(audio) {
+      audio.currentTime = 0;
       audio.volume = 0.4;
       audio.play().catch(function(e) { console.log("Audio bloqué par le navigateur"); });
     }
+    drawTetris();
+  }
+
+  function tetrisLoop() {
+    if (isGameOver) return;
+    piece.y++;
+    if (collide(board, piece)) {
+      piece.y--; // On annule la descente
+      lockPiece();
+    }
+    if (!isGameOver) drawTetris(); // CORRECTION: N'écrase plus le Game Over
+  }
+
+  function lockPiece() {
+    merge(board, piece);
+    sweep();
+    piece = createPiece();
+    
+    if (collide(board, piece)) {
+      triggerGameOver();
+    }
+  }
+
+  function triggerGameOver() {
+    isGameOver = true;
+    clearInterval(window.tetrisLoopId);
+    drawTetris(); // Dessine le plateau final
+    
+    // Overlay Game Over (Identique au Snake)
+    tCtx.fillStyle = "rgba(26, 30, 36, 0.9)";
+    tCtx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
+    tCtx.fillStyle = "#b87333"; // Cuivre
+    tCtx.font = "20px 'Courier New'";
+    tCtx.textAlign = "center";
+    tCtx.fillText("GAME OVER", tetrisCanvas.width/2, tetrisCanvas.height/2 - 10);
+    tCtx.font = "12px 'Courier New'";
+    tCtx.fillText("Cliquez pour recommencer", tetrisCanvas.width/2, tetrisCanvas.height/2 + 20);
+    
+    // Relance au clic
+    tetrisCanvas.addEventListener('click', initTetris, {once: true});
   }
 
   function drawTetris() {
-    tCtx.fillStyle = '#0d1117'; // Fond nuit
+    tCtx.fillStyle = '#0d1117';
     tCtx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
 
-    // Grille de fond (lignes subtiles)
     tCtx.strokeStyle = '#1a1e24';
     tCtx.lineWidth = 1;
     for (var i = 0; i <= COLS; i++) {
@@ -1056,7 +1094,7 @@ a:hover { color:var(--red); }
     }
 
     drawMatrix(board, 0, 0);
-    drawMatrix(piece.shape, piece.x, piece.y);
+    if(!isGameOver) drawMatrix(piece.shape, piece.x, piece.y);
   }
 
   function drawMatrix(matrix, offsetX, offsetY) {
@@ -1065,7 +1103,6 @@ a:hover { color:var(--red); }
         if (matrix[y][x] > 0) {
           tCtx.fillStyle = COLORS[matrix[y][x]];
           tCtx.fillRect((x + offsetX) * BLOCK, (y + offsetY) * BLOCK, BLOCK - 1, BLOCK - 1);
-          // Bordure métallique
           tCtx.strokeStyle = '#000';
           tCtx.strokeRect((x + offsetX) * BLOCK, (y + offsetY) * BLOCK, BLOCK - 1, BLOCK - 1);
         }
@@ -1098,7 +1135,6 @@ a:hover { color:var(--red); }
     });
   }
 
-  // Nouvelle fonction de rotation robuste
   function rotate(matrix) {
     var N = matrix.length;
     var M = matrix[0].length;
@@ -1110,23 +1146,6 @@ a:hover { color:var(--red); }
       }
     }
     return result;
-  }
-
-  function playerRotate() {
-    var pos = piece.x;
-    var offset = 1;
-    var rotatedShape = rotate(piece.shape);
-    
-    // Wall-kick (décalage si on est contre un mur)
-    while (collide(board, {shape: rotatedShape, x: piece.x, y: piece.y})) {
-      piece.x += offset;
-      offset = -(offset + (offset > 0 ? 1 : -1));
-      if (offset > piece.shape[0].length) {
-        piece.x = pos;
-        return; // Échec de la rotation
-      }
-    }
-    piece.shape = rotatedShape;
   }
 
   function sweep() {
@@ -1144,49 +1163,55 @@ a:hover { color:var(--red); }
       tetrisScoreEl.textContent = tScore;
       tLevel = Math.floor(tScore / 50) + 1;
       tetrisLevelEl.textContent = tLevel;
-      clearInterval(tGameLoop);
-      tGameLoop = setInterval(dropTetris, Math.max(100, 800 - (tLevel * 50)));
+      clearInterval(window.tetrisLoopId);
+      window.tetrisLoopId = setInterval(tetrisLoop, Math.max(100, 800 - (tLevel * 50)));
     }
   }
 
-  function dropTetris() {
-    piece.y++;
-    if (collide(board, piece)) {
-      piece.y--;
-      merge(board, piece);
-      sweep();
-      piece = createPiece();
-      if (collide(board, piece)) {
-        clearInterval(tGameLoop);
-        tCtx.fillStyle = "rgba(26, 30, 36, 0.9)";
-        tCtx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
-        tCtx.fillStyle = "#b87333";
-        tCtx.font = "20px 'Courier New'";
-        tCtx.textAlign = "center";
-        tCtx.fillText("GAME OVER", tetrisCanvas.width/2, tetrisCanvas.height/2);
-        tCtx.font = "12px 'Courier New'";
-        tCtx.fillText("Cliquez pour relancer", tetrisCanvas.width/2, tetrisCanvas.height/2 + 30);
-        tetrisCanvas.addEventListener('click', initTetris, {once: true});
-      }
-    }
-    drawTetris();
-  }
-
+  // Actions Utilisateur
   window.tetrisMove = function(dir) {
+    if (isGameOver) return;
     piece.x += (dir === 'left' ? -1 : 1);
     if (collide(board, piece)) piece.x += (dir === 'left' ? 1 : -1);
     drawTetris();
   };
   
   window.tetrisRotate = function() { 
-    playerRotate(); 
+    if (isGameOver) return;
+    var pos = piece.x;
+    var offset = 1;
+    var rotatedShape = rotate(piece.shape);
+    
+    while (collide(board, {shape: rotatedShape, x: piece.x, y: piece.y})) {
+      piece.x += offset;
+      offset = -(offset + (offset > 0 ? 1 : -1));
+      if (offset > piece.shape[0].length) {
+        piece.x = pos;
+        return;
+      }
+    }
+    piece.shape = rotatedShape;
     drawTetris(); 
   };
   
-  window.tetrisDrop = function() {
-    while (!collide(board, piece)) piece.y++;
+  window.tetrisSoftDrop = function() {
+    if (isGameOver) return;
+    piece.y++;
+    if (collide(board, piece)) {
+      piece.y--;
+      lockPiece();
+    }
+    if (!isGameOver) drawTetris();
+  };
+
+  window.tetrisHardDrop = function() {
+    if (isGameOver) return;
+    while (!collide(board, piece)) {
+      piece.y++;
+    }
     piece.y--;
-    dropTetris();
+    lockPiece();
+    if (!isGameOver) drawTetris();
   };
 
   window.ouvrirTetris = function() {
@@ -1194,7 +1219,7 @@ a:hover { color:var(--red); }
     setTimeout(initTetris, 100);
   };
 
-  // Événements clavier pour les deux jeux
+  // Contrôles clavier
   document.addEventListener('keydown', function(e) {
     var isSnakeOpen = document.getElementById('modal-snake').classList.contains('active');
     var isTetrisOpen = document.getElementById('modal-tetris').classList.contains('active');
@@ -1212,9 +1237,9 @@ a:hover { color:var(--red); }
       if([37,38,39,40,32].includes(e.keyCode)) e.preventDefault();
       if (e.keyCode === 37) tetrisMove('left');
       if (e.keyCode === 39) tetrisMove('right');
-      if (e.keyCode === 38) tetrisRotate(); // Flèche Haut = Tourner
-      if (e.keyCode === 40) { piece.y++; drawTetris(); } // Flèche Bas = Descendre plus vite
-      if (e.keyCode === 32) tetrisDrop(); // Espace = Drop
+      if (e.keyCode === 38) tetrisRotate();
+      if (e.keyCode === 40) tetrisSoftDrop(); // Flèche bas = descente manuelle sécurisée
+      if (e.keyCode === 32) tetrisHardDrop(); // Espace = drop instantané
     }
   });
 
