@@ -559,7 +559,8 @@ a:hover { color:var(--red); }
       <div class="panel-body">
         <p class="lead">Fiches techniques de la cellule Eva.</p>
         <div class="grid">
-          <!-- FICHE 01 -->
+          
+          <!-- FICHE 01 : FM -->
           <article class="fiche">
             <div class="fiche-head">
               <span class="idx">Fiche 01</span>
@@ -570,13 +571,13 @@ a:hover { color:var(--red); }
               <tr><th>Nom de naissance</th><td><span class="redacted" title="Caviardé — accès restreint">████████████</span></td></tr>
               <tr><th>Équipement</th><td>MANIFESTE, synthétiseur modulaire, console analogique</td></tr>
               <tr><th>Spécialité</th><td>EXPÉRIMENTALE, INGÉNIERIE</td></tr>
-              <tr><th>Matricule</th><td>FM-<span class="redacted" title="Caviardé — accès restreint">██-███</span></td></tr>
+              <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">██-███</span></td></tr>
               <tr><th>Statut</th><td><span class="badge on">ACTIF</span></td></tr>
             </table>
             <p class="note">Travaille uniquement sur REAPER. Ancienne membre de la cellule « onion », sujette PTSD.</p>
           </article>
 
-          <!-- FICHE 02 -->
+          <!-- FICHE 02 : SETHAM -->
           <article class="fiche">
             <div class="fiche-head">
               <span class="idx">Fiche 02</span>
@@ -593,7 +594,7 @@ a:hover { color:var(--red); }
             <p class="note">Voix et plume du laboratoire. Trotskiste notoire.</p>
           </article>
 
-          <!-- FICHE 03 -->
+          <!-- FICHE 03 : FAUNEFOSSE -->
           <article class="fiche">
             <div class="fiche-head">
               <span class="idx">Fiche 03</span>
@@ -601,7 +602,8 @@ a:hover { color:var(--red); }
             </div>
             <table class="spec">
               <tr><th>Fonction</th><td>Collaborateur externe · Archiviste</td></tr>
-              <tr><th>Formation</th><td>Masterant en histoire antique</td></tr>
+              <tr><th>Identité civile</th><td><span class="redacted" title="Caviardé — accès restreint">████████████</span></td></tr>
+              <tr><th>Équipement</th><td>Archives manuscrites, volumes antiques, matériel de fouille</td></tr>
               <tr><th>Spécialité</th><td>Savoirs anciens et oubliés, exhumés puis remis en circulation</td></tr>
               <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">███████████████</span></td></tr>
               <tr><th>Statut</th><td><span class="badge offline" id="faunefosse-status">HORS LIGNE</span></td></tr>
@@ -609,6 +611,7 @@ a:hover { color:var(--red); }
             <p class="note">Savant fou détenteur de savoirs perdus et oubliés qu'il met au profit des expériences du laboratoire.</p>
             <a class="btn btn-yt" href="https://www.youtube.com/@faunefosse6417" target="_blank" rel="noopener noreferrer">► Archives — @faunefosse6417</a>
           </article>
+          
         </div>
       </div>
     </section>
@@ -1048,7 +1051,7 @@ a:hover { color:var(--red); }
       piece.y--; // On annule la descente
       lockPiece();
     }
-    if (!isGameOver) drawTetris(); // CORRECTION: N'écrase plus le Game Over
+    if (!isGameOver) drawTetris(); 
   }
 
   function lockPiece() {
@@ -1064,19 +1067,17 @@ a:hover { color:var(--red); }
   function triggerGameOver() {
     isGameOver = true;
     clearInterval(window.tetrisLoopId);
-    drawTetris(); // Dessine le plateau final
+    drawTetris(); 
     
-    // Overlay Game Over (Identique au Snake)
     tCtx.fillStyle = "rgba(26, 30, 36, 0.9)";
     tCtx.fillRect(0, 0, tetrisCanvas.width, tetrisCanvas.height);
-    tCtx.fillStyle = "#b87333"; // Cuivre
+    tCtx.fillStyle = "#b87333"; 
     tCtx.font = "20px 'Courier New'";
     tCtx.textAlign = "center";
     tCtx.fillText("GAME OVER", tetrisCanvas.width/2, tetrisCanvas.height/2 - 10);
     tCtx.font = "12px 'Courier New'";
     tCtx.fillText("Cliquez pour recommencer", tetrisCanvas.width/2, tetrisCanvas.height/2 + 20);
     
-    // Relance au clic
     tetrisCanvas.addEventListener('click', initTetris, {once: true});
   }
 
@@ -1238,8 +1239,8 @@ a:hover { color:var(--red); }
       if (e.keyCode === 37) tetrisMove('left');
       if (e.keyCode === 39) tetrisMove('right');
       if (e.keyCode === 38) tetrisRotate();
-      if (e.keyCode === 40) tetrisSoftDrop(); // Flèche bas = descente manuelle sécurisée
-      if (e.keyCode === 32) tetrisHardDrop(); // Espace = drop instantané
+      if (e.keyCode === 40) tetrisSoftDrop();
+      if (e.keyCode === 32) tetrisHardDrop();
     }
   });
 
