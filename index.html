@@ -470,26 +470,29 @@ h1 .accent:hover{color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6);}
 }
 .vhs-player {
   margin-bottom: 20px;
-  background: #050202;
-  padding: 12px;
+  background: #140b0b; /* Fond du panneau, plus propre */
+  padding: 15px;
   border: 1px solid var(--red-dim);
   border-left: 3px solid var(--red);
+  border-radius: 2px;
 }
 .vhs-track-name {
   display: block;
-  font-size: 10px;
+  font-size: 11px;
   color: var(--orange);
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-shadow: 0 0 5px rgba(255, 153, 0, 0.3);
 }
+/* CORRECTION ICI : On utilise color-scheme pour un lecteur natif sombre et lisible */
 .vhs-player audio {
   width: 100%;
-  filter: invert(1) hue-rotate(180deg) brightness(0.8) sepia(1) hue-rotate(-50deg) saturate(3);
-}
-.vhs-player audio::-webkit-media-controls-panel {
-  background-color: #1a0505;
+  height: 40px;
+  outline: none;
+  border-radius: 2px;
+  color-scheme: dark; /* Demande au navigateur d'utiliser les contrôles en mode sombre */
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
