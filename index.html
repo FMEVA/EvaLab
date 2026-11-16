@@ -1,4 +1,4 @@
-ƒ<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -127,8 +127,13 @@ body{
   font-family:"Courier New",monospace; font-size:13px; font-weight:bold;
   letter-spacing:.22em; text-transform:uppercase; color:var(--red);
   border:2px solid var(--red); transform:rotate(-11deg); opacity:.8;
-  pointer-events:none; user-select:none; z-index:3;
+  user-select:none; z-index:3; cursor: pointer;
   text-shadow:0 0 5px var(--red-glow); box-shadow: 0 0 10px var(--red-glow), inset 0 0 10px var(--red-glow);
+  transition: opacity 0.2s, box-shadow 0.2s;
+}
+.stamp:hover {
+  opacity: 1;
+  box-shadow: 0 0 15px var(--red), inset 0 0 10px var(--red);
 }
 .redacted {
   background:#000; color:#000; padding:0 4px; border:1px solid var(--red-dim);
@@ -412,7 +417,7 @@ h1 .accent:hover{color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6);}
 .matrix-button {
   display: block;
   width: 100%;
-  background: #b31b1b; /* Rouge un peu plus sombre */
+  background: #b31b1b;
   color: #fff;
   border: none;
   padding: 15px;
@@ -433,7 +438,7 @@ h1 .accent:hover{color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6);}
 .matrix-download-area {
   text-align: center;
   margin-top: 15px;
-  display: none; /* Caché par défaut */
+  display: none; 
 }
 .btn-matrix-download {
   display: inline-block;
@@ -450,6 +455,41 @@ h1 .accent:hover{color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6);}
 .btn-matrix-download:hover {
   background: var(--orange);
   color: #000;
+}
+
+/* --- NOUVEAU STYLE : VHS (INTERCEPTION) --- */
+.modal-window.vhs-theme {
+  background: #0a0505;
+  border: 2px solid var(--red);
+  box-shadow: 0 0 30px rgba(230, 28, 28, 0.3), inset 0 0 15px rgba(230,28,28,0.1);
+}
+.vhs-theme .modal-titlebar {
+  background: #111;
+  color: var(--red);
+  border-bottom: 1px solid var(--red-dim);
+}
+.vhs-player {
+  margin-bottom: 20px;
+  background: #050202;
+  padding: 12px;
+  border: 1px solid var(--red-dim);
+  border-left: 3px solid var(--red);
+}
+.vhs-track-name {
+  display: block;
+  font-size: 10px;
+  color: var(--orange);
+  margin-bottom: 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.vhs-player audio {
+  width: 100%;
+  filter: invert(1) hue-rotate(180deg) brightness(0.8) sepia(1) hue-rotate(-50deg) saturate(3);
+}
+.vhs-player audio::-webkit-media-controls-panel {
+  background-color: #1a0505;
 }
 
 /* ╔══════════════════════════════════════════════════════════════════╗
@@ -586,7 +626,8 @@ a:hover { color:var(--red); }
   <!-- HEADER -->
   <header class="panel" data-watermark="CONFIDENTIEL">
 
-    <span class="stamp" aria-hidden="true">SECRET DÉFENSE</span>
+    <!-- LE TAMPON EST MAINTENANT CLIQUABLE -->
+    <span class="stamp" onclick="ouvrirVHS()" title="Accéder au rapport d'interception VHS">SECRET DÉFENSE</span>
 
     <div class="titlebar">
       <span>ARCHIVES DOSSIER GREYTOWN</span>
@@ -826,7 +867,7 @@ a:hover { color:var(--red); }
 <!-- ======================================================= -->
 <!-- EFFET SONORE CACHÉ                                      -->
 <!-- ======================================================= -->
-<audio id="sfx-depriment" src="tag.wav" preload="auto"></audio>
+<audio id="sfx-depriment" src="d%C3%A9priment.wav" preload="auto"></audio>
 
 <!-- ======================================================= -->
 <!-- MODALE 1 : DOSSIER MORPHEME                              -->
@@ -1038,6 +1079,51 @@ a:hover { color:var(--red); }
   </div>
 </div>
 
+<!-- ======================================================= -->
+<!-- MODALE 6 : VHS INTERCEPTION                              -->
+<!-- ======================================================= -->
+<div id="modal-vhs" class="modal-overlay" onclick="fermerModale('modal-vhs', event)">
+  <div class="modal-window vhs-theme" onclick="event.stopPropagation()">
+    <div class="modal-titlebar">
+      <span>SYS: EVA LAB - RAPPORT D'INTERCEPTION [VHS]</span>
+      <button class="modal-close" onclick="fermerModale('modal-vhs')">✕</button>
+    </div>
+    <div class="modal-body">
+      
+      <h2 style="color: var(--red); font-size: 18px; margin-top: 0;">ALERTE : CONTENU NON AUTORISÉ</h2>
+      
+      <p style="margin-bottom: 15px;">
+        La cellule <span class="redacted" title="Caviardé">EVA</span> a intercepté un lot de 
+        <span class="redacted" title="Caviardé">cassettes VHS de contrebande</span> en provenance directe de 
+        <span class="redacted" title="Caviardé">Greytown</span>.
+      </p>
+      
+      <p style="margin-bottom: 15px;">
+        Les bandes contiennent de nouveaux enregistrements expérimentaux produits avec du 
+        <span class="redacted" title="Caviardé">matériel audio illégal</span> et non homologué par les autorités locales.
+      </p>
+
+      <div style="background: rgba(230,28,28,0.1); border-left: 2px solid var(--red); padding: 10px; margin-bottom: 20px;">
+        <p style="margin: 0; color: var(--red); font-size: 11px; text-transform: uppercase; font-weight: bold;">
+          [ AVERTISSEMENT DU PARTI ] : Le contenu audio ci-dessous est actuellement en cours de vérification. Toute écoute non autorisée est punie par la loi.
+        </p>
+      </div>
+
+      <!-- LECTEURS AUDIO VHS -->
+      <div class="vhs-player">
+        <span class="vhs-track-name">TRACK 01 // SIGNAL PIRATE (NON VÉRIFIÉ)</span>
+        <audio controls src="FPPBFT.wav"></audio>
+      </div>
+
+      <div class="vhs-player">
+        <span class="vhs-track-name">TRACK 02 // DISTORSION ILLÉGALE (NON VÉRIFIÉ)</span>
+        <audio controls src="KIDDING.wav"></audio>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 <script>
 /* JAVASCRIPT MINIMAL */
@@ -1127,11 +1213,16 @@ a:hover { color:var(--red); }
       var audio = document.getElementById('prague-audio');
       if (audio) audio.pause();
     }
+    if (id === 'modal-vhs') {
+      var vhsAudios = document.querySelectorAll('.vhs-theme audio');
+      vhsAudios.forEach(function(audio) { audio.pause(); });
+    }
   };
 
   window.ouvrirMorpheme = function() { ouvrirModale('modal-morpheme'); };
   window.ouvrirFringe = function() { ouvrirModale('modal-fringe'); };
   window.ouvrirRamdoMat = function() { ouvrirModale('modal-matrix'); };
+  window.ouvrirVHS = function() { ouvrirModale('modal-vhs'); };
 
   // 7. SIMULATEUR DE RÉALITÉ (RAMDOMAT)
   var dataPool = {
