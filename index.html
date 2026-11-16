@@ -339,6 +339,119 @@ h1 .accent:hover{color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6);}
 }
 .tetris-btn:active { background: var(--prague-copper); color: #000; }
 
+/* --- NOUVEAU STYLE : SIMULATEUR DE RÉALITÉ (RamdoMat) --- */
+.modal-window.matrix-theme {
+  background: #050202;
+  border: 2px solid var(--red);
+  box-shadow: 0 0 30px rgba(230, 28, 28, 0.3), inset 0 0 15px rgba(230,28,28,0.1);
+}
+.matrix-theme .modal-titlebar {
+  background: #111;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--red-dim);
+}
+.matrix-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed var(--red-dim);
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+.matrix-title {
+  color: var(--red);
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.matrix-badge {
+  background: var(--red);
+  color: #000;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  letter-spacing: 0.1em;
+}
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.matrix-box {
+  background: #0a0303;
+  border: 1px solid var(--red-dim);
+  padding: 10px;
+  position: relative;
+  min-height: 70px;
+}
+.matrix-box.full-width {
+  grid-column: 1 / -1;
+}
+.matrix-box-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.matrix-lock {
+  border: 1px solid var(--text-dim);
+  padding: 1px 4px;
+  font-size: 8px;
+  color: var(--text-dim);
+}
+.matrix-data {
+  font-size: 11px;
+  color: var(--red);
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.matrix-button {
+  display: block;
+  width: 100%;
+  background: #b31b1b; /* Rouge un peu plus sombre */
+  color: #fff;
+  border: none;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  margin-bottom: 15px;
+}
+.matrix-button:hover {
+  background: var(--red);
+  box-shadow: 0 0 15px var(--red-glow);
+}
+.matrix-download-area {
+  text-align: center;
+  margin-top: 15px;
+  display: none; /* Caché par défaut */
+}
+.btn-matrix-download {
+  display: inline-block;
+  background: transparent;
+  color: var(--orange);
+  border: 1px solid var(--orange);
+  padding: 10px 20px;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.btn-matrix-download:hover {
+  background: var(--orange);
+  color: #000;
+}
+
 /* ╔══════════════════════════════════════════════════════════════════╗
    ║   ⑫ LEAD & FICHES MEMBRES                                         ║
    ╚══════════════════════════════════════════════════════════════════╝ */
@@ -446,6 +559,8 @@ a:hover { color:var(--red); }
   table.spec{font-size:10.5px}
   .stamp{font-size:10px;padding:3px 8px;top:14px;right:12px;letter-spacing:.16em}
   .tetris-container { flex-direction: column; align-items: center; }
+  .matrix-grid { grid-template-columns: 1fr; }
+  .matrix-box.full-width { grid-column: 1; }
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -504,10 +619,13 @@ a:hover { color:var(--red); }
         <a href="https://music.apple.com/fr/artist/eva-laboratoire/6771915833" target="_blank" rel="noopener noreferrer">Apple Music</a>
       </nav>
 
-      <!-- SEUL LE BOUTON FRINGE RESTE ICI -->
+      <!-- BOUTONS DES MODULES -->
       <div style="margin-top: 15px; border-top: 1px dashed var(--red-dim); padding-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
         <button class="btn-fringe-header" onclick="ouvrirFringe()">
           [+] MODULE FRINGE
+        </button>
+        <button class="btn-fringe-header" style="color: var(--red); border-color: var(--red-dim);" onclick="ouvrirRamdoMat()">
+          [+] SIMULATEUR DE RÉALITÉ
         </button>
       </div>
 
@@ -845,6 +963,76 @@ a:hover { color:var(--red); }
   </div>
 </div>
 
+<!-- ======================================================= -->
+<!-- MODALE 5 : SIMULATEUR DE RÉALITÉ (RAMDOMAT)              -->
+<!-- ======================================================= -->
+<div id="modal-matrix" class="modal-overlay" onclick="fermerModale('modal-matrix', event)">
+  <div class="modal-window matrix-theme" onclick="event.stopPropagation()">
+    <div class="modal-titlebar">
+      <span>EVA LAB // SIMULATEUR DE RÉALITÉ</span>
+      <button class="modal-close" onclick="fermerModale('modal-matrix')">✕</button>
+    </div>
+    <div class="modal-body" style="background: #050202;">
+      
+      <div class="matrix-header">
+        <div class="matrix-title">EVA LAB SIMULATION UPDATE</div>
+        <div class="matrix-badge">EVA NERV</div>
+      </div>
+
+      <div class="matrix-grid">
+        <div class="matrix-box">
+          <div class="matrix-box-header">
+            <span>CODE // STYLE_GENRE</span>
+            <span class="matrix-lock">LOCK</span>
+          </div>
+          <div class="matrix-data" id="mat-genre">AWAITING RUN...</div>
+        </div>
+        
+        <div class="matrix-box">
+          <div class="matrix-box-header">
+            <span>CODE // TIMING_BPM</span>
+            <span class="matrix-lock">LOCK</span>
+          </div>
+          <div class="matrix-data" id="mat-bpm">AWAITING RUN...</div>
+        </div>
+
+        <div class="matrix-box">
+          <div class="matrix-box-header">
+            <span>CODE // SAMPLE_SOURCE</span>
+            <span class="matrix-lock">LOCK</span>
+          </div>
+          <div class="matrix-data" id="mat-sample">AWAITING RUN...</div>
+        </div>
+
+        <div class="matrix-box">
+          <div class="matrix-box-header">
+            <span>CODE // PRO_FX_VST</span>
+            <span class="matrix-lock">LOCK</span>
+          </div>
+          <div class="matrix-data" id="mat-vst">AWAITING RUN...</div>
+        </div>
+
+        <div class="matrix-box full-width">
+          <div class="matrix-box-header">
+            <span>CODE // PROTOCOLE_INSPIRATION</span>
+            <span class="matrix-lock">LOCK</span>
+          </div>
+          <div class="matrix-data" id="mat-inspiration">AWAITING RUN...</div>
+        </div>
+      </div>
+
+      <button class="matrix-button" onclick="lancerProtocole()">>>> LANCE LE PROTOCOLE <<<</button>
+
+      <div class="matrix-download-area" id="matrix-download-area">
+        <p style="color: var(--orange); font-size: 11px; margin-bottom: 10px;">PROTOCOLE GÉNÉRÉ. RÉCUPÉREZ LE SCRIPT LUA :</p>
+        <a href="RamdoMat.lua" download="RamdoMat.lua" class="btn-matrix-download">▼ TÉLÉCHARGER RamdoMat.lua</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 <script>
 /* JAVASCRIPT MINIMAL */
 (function () {
@@ -925,8 +1113,44 @@ a:hover { color:var(--red); }
 
   window.ouvrirMorpheme = function() { ouvrirModale('modal-morpheme'); };
   window.ouvrirFringe = function() { ouvrirModale('modal-fringe'); };
+  window.ouvrirRamdoMat = function() { ouvrirModale('modal-matrix'); };
 
-  // 6. JEU SNAKE (Allégé)
+  // 6. SIMULATEUR DE RÉALITÉ (RAMDOMAT)
+  var dataPool = {
+    genre: ["INDUSTRIAL COLD WAVE", "RAP EXPÉRIMENTAL", "GREYTOWN POST-PUNK", "SOVIET BREAKCORE", "GHOST TECHNO"],
+    bpm: ["133", "87", "140", "170", "60", "125", "95"],
+    sample: ["RADIO THOT (87.0)", "PLUIE SUR LIMOGES", "MAGNÉTOPHONE BANDES", "THOT ARCHIVES", "DISTORSION BÉTON"],
+    vst: ["DDR-VERB", "FRINGE (EVA LAB)", "REAPER JSFX", "THOT OVERDRIVE", "MODULAR CONSOLE"],
+    inspiration: ["PROTOCOLE MORPHEME", "DUPLICATION THOT", "PRAGUE TETRIS", "FLUX SETHAM", "CRASH CELLULE ONION"]
+  };
+
+  function pickRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  window.lancerProtocole = function() {
+    var ids = ['mat-genre', 'mat-bpm', 'mat-sample', 'mat-vst', 'mat-inspiration'];
+    
+    ids.forEach(function(id) {
+      document.getElementById(id).textContent = "CALCUL EN COURS...";
+    });
+    
+    document.getElementById('matrix-download-area').style.display = 'none';
+
+    var count = 0;
+    var interval = setInterval(function() {
+      if (count < ids.length) {
+        var key = ids[count].replace('mat-', '');
+        document.getElementById(ids[count]).textContent = pickRandom(dataPool[key]);
+        count++;
+      } else {
+        clearInterval(interval);
+        document.getElementById('matrix-download-area').style.display = 'block';
+      }
+    }, 200);
+  };
+
+  // 7. JEU SNAKE (Allégé)
   var snakeCanvas = document.getElementById('snake-canvas');
   var snakeCtx = snakeCanvas.getContext('2d');
   var snakeScoreEl = document.getElementById('snake-score');
@@ -990,7 +1214,7 @@ a:hover { color:var(--red); }
   window.ouvrirSnake = function() { ouvrirModale('modal-snake'); setTimeout(initSnake, 100); };
 
 
-  // 7. JEU TETRIS (PRAGUE) - LOGIQUE REVISITÉE ET CORRIGÉE
+  // 8. JEU TETRIS (PRAGUE)
   var tetrisCanvas = document.getElementById('tetris-canvas');
   var tCtx = tetrisCanvas.getContext('2d');
   var tetrisScoreEl = document.getElementById('tetris-score');
@@ -1048,7 +1272,7 @@ a:hover { color:var(--red); }
     if (isGameOver) return;
     piece.y++;
     if (collide(board, piece)) {
-      piece.y--; // On annule la descente
+      piece.y--; 
       lockPiece();
     }
     if (!isGameOver) drawTetris(); 
@@ -1169,7 +1393,6 @@ a:hover { color:var(--red); }
     }
   }
 
-  // Actions Utilisateur
   window.tetrisMove = function(dir) {
     if (isGameOver) return;
     piece.x += (dir === 'left' ? -1 : 1);
@@ -1244,7 +1467,7 @@ a:hover { color:var(--red); }
     }
   });
 
-  // 8. CODE KONAMI
+  // 9. CODE KONAMI
   var konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   var konamiIndex = 0;
   document.addEventListener('keydown', function(e) {
