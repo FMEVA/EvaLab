@@ -686,7 +686,8 @@ a:hover { color:var(--red); }
             </div>
             <table class="spec">
               <tr><th>Fonction</th><td>Productrice · Ingénieure du son</td></tr>
-              <tr><th>Nom de naissance</th><td><span class="redacted" title="Caviardé — accès restreint">████████████</span></td></tr>
+              <!-- AJOUT DU ONCLICK ICI POUR LE SON -->
+              <tr><th>Nom de naissance</th><td><span class="redacted" onclick="playDepriment()" title="Caviardé — accès restreint">████████████</span></td></tr>
               <tr><th>Équipement</th><td>MANIFESTE, synthétiseur modulaire, console analogique</td></tr>
               <tr><th>Spécialité</th><td>EXPÉRIMENTALE, INGÉNIERIE</td></tr>
               <tr><th>Localisation</th><td><span class="redacted" title="Caviardé — accès restreint">██-███</span></td></tr>
@@ -821,6 +822,11 @@ a:hover { color:var(--red); }
 <div class="classif-bottom" role="note">
   ■ NE PAS CONSERVER ■
 </div>
+
+<!-- ======================================================= -->
+<!-- EFFET SONORE CACHÉ                                      -->
+<!-- ======================================================= -->
+<audio id="sfx-depriment" src="dépriment.wav" preload="auto"></audio>
 
 <!-- ======================================================= -->
 <!-- MODALE 1 : DOSSIER MORPHEME                              -->
@@ -1076,7 +1082,19 @@ a:hover { color:var(--red); }
     window.setTimeout(function () { target.classList.remove('click-sat'); }, 400);
   }, true);
 
-  // 4. BUG STATUT FAUNEFOSSE
+  // 4. EFFET SONORE DEPRIMENT
+  window.playDepriment = function() {
+    var audio = document.getElementById('sfx-depriment');
+    if (audio) {
+      audio.currentTime = 0; // Remet le son au début à chaque clic
+      audio.volume = 0.6; // Ajuste le volume si besoin
+      audio.play().catch(function(e) { 
+        console.log("Lecture audio bloquée par le navigateur ou fichier introuvable."); 
+      });
+    }
+  };
+
+  // 5. BUG STATUT FAUNEFOSSE
   var fs = document.getElementById('faunefosse-status');
   if (fs) {
     window.setInterval(function () {
@@ -1091,7 +1109,7 @@ a:hover { color:var(--red); }
     }, 30000);
   }
 
-  // 5. GESTION DES MODALES
+  // 6. GESTION DES MODALES
   window.ouvrirModale = function(id) {
     var modal = document.getElementById(id);
     if (modal) modal.classList.add('active');
@@ -1115,7 +1133,7 @@ a:hover { color:var(--red); }
   window.ouvrirFringe = function() { ouvrirModale('modal-fringe'); };
   window.ouvrirRamdoMat = function() { ouvrirModale('modal-matrix'); };
 
-  // 6. SIMULATEUR DE RÉALITÉ (RAMDOMAT)
+  // 7. SIMULATEUR DE RÉALITÉ (RAMDOMAT)
   var dataPool = {
     genre: ["INDUSTRIAL COLD WAVE", "RAP EXPÉRIMENTAL", "GREYTOWN POST-PUNK", "SOVIET BREAKCORE", "GHOST TECHNO"],
     bpm: ["133", "87", "140", "170", "60", "125", "95"],
@@ -1150,7 +1168,7 @@ a:hover { color:var(--red); }
     }, 200);
   };
 
-  // 7. JEU SNAKE (Allégé)
+  // 8. JEU SNAKE (Allégé)
   var snakeCanvas = document.getElementById('snake-canvas');
   var snakeCtx = snakeCanvas.getContext('2d');
   var snakeScoreEl = document.getElementById('snake-score');
@@ -1214,7 +1232,7 @@ a:hover { color:var(--red); }
   window.ouvrirSnake = function() { ouvrirModale('modal-snake'); setTimeout(initSnake, 100); };
 
 
-  // 8. JEU TETRIS (PRAGUE)
+  // 9. JEU TETRIS (PRAGUE)
   var tetrisCanvas = document.getElementById('tetris-canvas');
   var tCtx = tetrisCanvas.getContext('2d');
   var tetrisScoreEl = document.getElementById('tetris-score');
@@ -1467,7 +1485,7 @@ a:hover { color:var(--red); }
     }
   });
 
-  // 9. CODE KONAMI
+  // 10. CODE KONAMI
   var konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   var konamiIndex = 0;
   document.addEventListener('keydown', function(e) {
